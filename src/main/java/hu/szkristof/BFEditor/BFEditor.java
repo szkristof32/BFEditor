@@ -1,16 +1,24 @@
-package hu.szkristof.BFEditor.core;
+package hu.szkristof.BFEditor;
+
+import hu.szkristof.BFEngine.BFEngine;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 public class BFEditor extends JFrame {
 
+	private JTextArea textArea;
 	private Font editorFont = null;
+
+	private BFEngine engine = null;
 
 	public BFEditor() {
 		super("BFEditor");
+		this.engine = new BFEngine();
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1280, 720);
 		setLocationRelativeTo(null);
@@ -68,15 +76,28 @@ public class BFEditor extends JFrame {
 
 	private JPanel createSidePanel() {
 		JPanel sidePanel = new JPanel(new FlowLayout());
-		sidePanel.add(new JButton("OK"));
-		sidePanel.add(new JButton("Cancel"));
+
+		JButton runButton = new JButton("Run");
+		runButton.setAction(new AbstractAction("Run") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				engine.reset(textArea.getText());
+				try {
+					engine.run();
+				} catch (IOException ex) {
+					System.err.println("Error during execution");
+				}
+			}
+		});
+		sidePanel.add(runButton);
+
 		return sidePanel;
 	}
 
 	private JPanel createTextBoxPanel() {
 		JPanel textBoxPanel = new JPanel(new GridLayout(1, 1));
 
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setEditable(true);
 		textArea.setLineWrap(true);
 		textArea.setFont(editorFont);
