@@ -1,5 +1,6 @@
 package hu.szkristof.BFEditor;
 
+import hu.szkristof.BFEditor.menu.MenuBar;
 import hu.szkristof.BFEngine.BFEngine;
 
 import javax.swing.*;
@@ -10,105 +11,80 @@ import java.io.IOException;
 
 public class BFEditor extends JFrame {
 
-	private JTextArea textArea;
-	private Font editorFont = null;
+    private static BFEditor instance = null;
 
-	private BFEngine engine = null;
+    private JTextArea textArea;
+    private Font editorFont = null;
 
-	public BFEditor() {
-		super("BFEditor");
-		this.engine = new BFEngine();
+    private BFEngine engine = null;
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1280, 720);
-		setLocationRelativeTo(null);
-		setLayout(new BorderLayout());
+    public BFEditor() {
+        super("BFEditor");
+        instance = this;
+        this.engine = new BFEngine();
 
-		editorFont = new Font("Monospaced", Font.PLAIN, 12);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1280, 720);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-		JMenuBar menuBar = createMenuBar();
-		setJMenuBar(menuBar);
+        editorFont = new Font("Monospaced", Font.PLAIN, 12);
 
-		JPanel sidePanel = createSidePanel();
-		JPanel textBoxPanel = createTextBoxPanel();
+        setJMenuBar(new MenuBar());
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidePanel, textBoxPanel);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(150);
+        JPanel sidePanel = createSidePanel();
+        JPanel textBoxPanel = createTextBoxPanel();
 
-		add(splitPane, BorderLayout.CENTER);
-		setVisible(true);
-	}
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidePanel, textBoxPanel);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(150);
 
-	private JMenuBar createMenuBar() {
-		JFrame frame = this;
+        add(splitPane, BorderLayout.CENTER);
+        setVisible(true);
+    }
 
-		JMenuBar menuBar = new JMenuBar();
+    private JPanel createSidePanel() {
+        JPanel sidePanel = new JPanel(new FlowLayout());
 
-		JMenu fileMenu = new JMenu("File");
+        JButton runButton = new JButton(new AbstractAction("Run") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                engine.reset(textArea.getText());
+                try {
+                    engine.run();
+                } catch (IOException ex) {
+                    System.err.println("Error during execution");
+                }
+            }
+        });
+        sidePanel.add(runButton);
 
-		JMenuItem newMenuItem = new JMenuItem("New");
-		fileMenu.add(newMenuItem);
+        return sidePanel;
+    }
 
-		JMenuItem openMenuItem = new JMenuItem("Open");
-		fileMenu.add(openMenuItem);
+    private JPanel createTextBoxPanel() {
+        JPanel textBoxPanel = new JPanel(new GridLayout(1, 1));
 
-		JMenuItem saveMenuItem = new JMenuItem("Save");
-		fileMenu.add(saveMenuItem);
+        textArea = new JTextArea();
+        textArea.setEditable(true);
+        textArea.setLineWrap(true);
+        textArea.setFont(editorFont);
 
-		JMenuItem saveAsMenuItem = new JMenuItem("Save As");
-		fileMenu.add(saveAsMenuItem);
-		fileMenu.addSeparator();
+        textBoxPanel.add(textArea);
 
-		JMenuItem exitMenuItem = new JMenuItem("Exit");
-		exitMenuItem.setAction(new AbstractAction("Exit") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-			}
-		});
-		fileMenu.add(exitMenuItem);
+        return textBoxPanel;
+    }
 
-		menuBar.add(fileMenu);
+    public void requestClose() {
+        dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }
 
-		return menuBar;
-	}
+    public static BFEditor getInstance() {
+        return instance;
+    }
 
-	private JPanel createSidePanel() {
-		JPanel sidePanel = new JPanel(new FlowLayout());
-
-		JButton runButton = new JButton("Run");
-		runButton.setAction(new AbstractAction("Run") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				engine.reset(textArea.getText());
-				try {
-					engine.run();
-				} catch (IOException ex) {
-					System.err.println("Error during execution");
-				}
-			}
-		});
-		sidePanel.add(runButton);
-
-		return sidePanel;
-	}
-
-	private JPanel createTextBoxPanel() {
-		JPanel textBoxPanel = new JPanel(new GridLayout(1, 1));
-
-		textArea = new JTextArea();
-		textArea.setEditable(true);
-		textArea.setLineWrap(true);
-		textArea.setFont(editorFont);
-
-		textBoxPanel.add(textArea);
-
-		return textBoxPanel;
-	}
-
-	static void main(String[] args) {
-		new BFEditor();
-	}
+    static void main(String[] args) {
+        new BFEditor();
+    }
 
 }
