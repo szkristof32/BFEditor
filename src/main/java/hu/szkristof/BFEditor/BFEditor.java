@@ -11,11 +11,14 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_Init;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_Quit;
+
 public class BFEditor extends JFrame {
 
 	private static BFEditor instance = null;
 
-	private JTextArea textArea;
+	private EditorPanel editorPanel = null;
 	private Font editorFont = null;
 
 	private BFEngine engine = null;
@@ -35,8 +38,8 @@ public class BFEditor extends JFrame {
 		setJMenuBar(new MenuBar());
 
 		JPanel sidePanel = createSidePanel();
-		EditorPanel editorPanel = new EditorPanel();
-		editorPanel.openFile(new File("Untitled"));
+		editorPanel = new EditorPanel();
+		editorPanel.newFile();
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidePanel, editorPanel);
 		splitPane.setOneTouchExpandable(true);
@@ -52,7 +55,7 @@ public class BFEditor extends JFrame {
 		JButton runButton = new JButton(new AbstractAction("Run") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				engine.reset(textArea.getText());
+				engine.reset(); // TODO: get current buffer
 				try {
 					engine.run();
 				} catch (IOException ex) {
@@ -63,6 +66,10 @@ public class BFEditor extends JFrame {
 		sidePanel.add(runButton);
 
 		return sidePanel;
+	}
+
+	public EditorPanel getEditorPanel() {
+		return editorPanel;
 	}
 
 	public Font getEditorFont() {
@@ -78,7 +85,9 @@ public class BFEditor extends JFrame {
 	}
 
 	static void main(String[] args) {
+		NFD_Init();
 		new BFEditor();
+		NFD_Quit();
 	}
 
 }

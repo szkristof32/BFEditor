@@ -15,10 +15,21 @@ public class EditorPanel extends JTabbedPane {
 	public EditorPanel() {
 	}
 
+	public void newFile() {
+		FileEditor editor = new FileEditor(null);
+		openedFiles.add(editor);
+		addTabAndSwitch("Untitled", editor);
+	}
+
 	public void openFile(File file) {
 		FileEditor editor = new FileEditor(file);
 		openedFiles.add(editor);
-		addTab(file.getName(), editor);
+		addTabAndSwitch(file.getName(), editor);
+	}
+
+	private void addTabAndSwitch(String title, FileEditor editor) {
+		addTab(title, editor);
+		setSelectedIndex(getTabCount() - 1);
 		BFEditor.getInstance().revalidate();
 	}
 
