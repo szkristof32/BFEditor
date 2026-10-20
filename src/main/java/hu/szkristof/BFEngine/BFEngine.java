@@ -58,11 +58,64 @@ public class BFEngine {
 					if (bytesRead == 1)
 						memory[dataPointer] = (byte) buffer[0];
 					break;
+				case '[':
+					if (memory[dataPointer] == 0) {
+						int loopEnd = searchLoopEnd();
+						programCounter = loopEnd;
+						continue;
+					}
+					break;
+				case ']':
+					int loopStart = searchLoopStart();
+					programCounter = loopStart;
+					continue;
 			}
 
 			programCounter++;
 		}
 		System.out.println();
+	}
+
+	private int searchLoopStart() {
+		int innerLoopCount = 0;
+		int pc = programCounter - 1;
+
+		while (pc >= 0) {
+			switch (source.charAt(pc)) {
+				case '[':
+					if (innerLoopCount > 0)
+						innerLoopCount--;
+					else
+						return pc;
+					break;
+				case ']':
+					innerLoopCount++;
+			}
+			pc--;
+		}
+
+		return -1;
+	}
+
+	private int searchLoopEnd() {
+		int innerLoopCount = 0;
+		int pc = programCounter + 1;
+
+		while (pc < source.length()) {
+			switch (source.charAt(pc)) {
+				case '[':
+					innerLoopCount++;
+					break;
+				case ']':
+					if (innerLoopCount > 0)
+						innerLoopCount--;
+					else
+						return pc + 1;
+			}
+			pc++;
+		}
+
+		return -1;
 	}
 
 }
