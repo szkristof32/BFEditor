@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 
 import static org.lwjgl.util.nfd.NativeFileDialog.NFD_Init;
@@ -55,7 +54,7 @@ public class BFEditor extends JFrame {
 		JButton runButton = new JButton(new AbstractAction("Run") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				engine.reset(); // TODO: get current buffer
+				engine.reset(editorPanel.getCurrentBuffer());
 				try {
 					engine.run();
 				} catch (IOException ex) {

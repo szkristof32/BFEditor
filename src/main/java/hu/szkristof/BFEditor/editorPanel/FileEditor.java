@@ -54,4 +54,8 @@ public class FileEditor extends JPanel {
 		}
 	}
 
+	public String getBuffer() {
+		return textArea.getText();
+	}
+
 }

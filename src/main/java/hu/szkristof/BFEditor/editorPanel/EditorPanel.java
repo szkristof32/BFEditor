@@ -33,4 +33,13 @@ public class EditorPanel extends JTabbedPane {
 		BFEditor.getInstance().revalidate();
 	}
 
+	public String getCurrentBuffer() {
+		int selectedIndex = getSelectedIndex();
+		Component editor = getComponentAt(selectedIndex);
+		if (editor instanceof FileEditor fileEditor) {
+			return fileEditor.getBuffer();
+		}
+		return "";
+	}
+
 }
