@@ -58,6 +58,10 @@ public class FileEditor extends JPanel {
 		return file;
 	}
 
+	public void setFile(File file) {
+		this.file = file;
+	}
+
 	public String getBuffer() {
 		return textArea.getText();
 	}

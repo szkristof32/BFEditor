@@ -44,6 +44,9 @@ public class FileMenu extends JMenu {
 		JMenuItem saveMenuItem = new JMenuItem(new AbstractAction("Save") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				boolean success = BFEditor.getInstance().getEditorPanel().saveCurrentFile();
+				if (success) return;
+				
 				try (MemoryStack stack = MemoryStack.stackPush()) {
 					PointerBuffer buffer = stack.callocPointer(512);
 					int status = NFD_SaveDialog(buffer, null, (CharSequence) null, null);
@@ -59,7 +62,22 @@ public class FileMenu extends JMenu {
 		});
 		add(saveMenuItem);
 
-		JMenuItem saveAsMenuItem = new JMenuItem("Save As");
+		JMenuItem saveAsMenuItem = new JMenuItem(new AbstractAction("Save As") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try (MemoryStack stack = MemoryStack.stackPush()) {
+					PointerBuffer buffer = stack.callocPointer(512);
+					int status = NFD_SaveDialog(buffer, null, (CharSequence) null, null);
+					if (status == NFD_OKAY) {
+						BFEditor.getInstance().getEditorPanel().saveFile(new File(buffer.getStringASCII()));
+					} else if (status == NFD_CANCEL) {
+						System.out.println("User cancelled");
+					} else {
+						System.err.println("Error occurred: " + NFD_GetError());
+					}
+				}
+			}
+		});
 		add(saveAsMenuItem);
 
 		addSeparator();

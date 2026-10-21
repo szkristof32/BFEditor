@@ -27,12 +27,21 @@ public class EditorPanel extends JTabbedPane {
 		addTabAndSwitch(file.getName(), editor);
 	}
 
+	public boolean saveCurrentFile() {
+		File file = getCurrentFile();
+		if (file == null)
+			return false;
+		saveFile(file);
+		return true;
+	}
+
 	public void saveFile(File file) {
 		String buffer = getCurrentBuffer();
 		try (OutputStream out = new FileOutputStream(file)) {
 			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out))) {
 				writer.write(buffer);
 				replaceCurrentTab(file);
+				getCurrentEditor().setFile(file);
 			}
 		} catch (IOException e) {
 			System.err.println("Error during saving");
@@ -49,6 +58,24 @@ public class EditorPanel extends JTabbedPane {
 	private void replaceCurrentTab(File file) {
 		int selectedIndex = getSelectedIndex();
 		setTitleAt(selectedIndex, file.getName());
+	}
+
+	public FileEditor getCurrentEditor() {
+		int selectedIndex = getSelectedIndex();
+		Component editor = getComponentAt(selectedIndex);
+		if (editor instanceof FileEditor fileEditor) {
+			return fileEditor;
+		}
+		return null;
+	}
+
+	public File getCurrentFile() {
+		int selectedIndex = getSelectedIndex();
+		Component editor = getComponentAt(selectedIndex);
+		if (editor instanceof FileEditor fileEditor) {
+			return fileEditor.getFile();
+		}
+		return null;
 	}
 
 	public String getCurrentBuffer() {
