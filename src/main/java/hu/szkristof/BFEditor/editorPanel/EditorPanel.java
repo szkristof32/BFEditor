@@ -4,7 +4,7 @@ import hu.szkristof.BFEditor.BFEditor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +27,28 @@ public class EditorPanel extends JTabbedPane {
 		addTabAndSwitch(file.getName(), editor);
 	}
 
+	public void saveFile(File file) {
+		String buffer = getCurrentBuffer();
+		try (OutputStream out = new FileOutputStream(file)) {
+			try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out))) {
+				writer.write(buffer);
+				replaceCurrentTab(file);
+			}
+		} catch (IOException e) {
+			System.err.println("Error during saving");
+			e.printStackTrace();
+		}
+	}
+
 	private void addTabAndSwitch(String title, FileEditor editor) {
 		addTab(title, editor);
 		setSelectedIndex(getTabCount() - 1);
 		BFEditor.getInstance().revalidate();
+	}
+
+	private void replaceCurrentTab(File file) {
+		int selectedIndex = getSelectedIndex();
+		setTitleAt(selectedIndex, file.getName());
 	}
 
 	public String getCurrentBuffer() {
