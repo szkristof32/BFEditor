@@ -9,11 +9,14 @@ import java.io.*;
 
 public class FileEditor extends JPanel {
 
+	private EditorTab tab;
+
 	private File file;
 	private JTextArea textArea;
 
 	public FileEditor(File file) {
 		super(new GridLayout(1, 1));
+		this.tab = new EditorTab(this, file != null ? file.getName() : "Untitled");
 		this.file = file;
 		this.textArea = new JTextArea();
 
@@ -52,6 +55,10 @@ public class FileEditor extends JPanel {
 				BFEditor.getInstance().revalidate();
 			}
 		}
+	}
+
+	public EditorTab getTab() {
+		return tab;
 	}
 
 	public File getFile() {

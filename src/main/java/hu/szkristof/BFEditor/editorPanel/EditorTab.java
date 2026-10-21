@@ -1,0 +1,59 @@
+package hu.szkristof.BFEditor.editorPanel;
+
+import hu.szkristof.BFEditor.BFEditor;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+
+public class EditorTab extends JPanel {
+
+	private FileEditor editor;
+
+	private String title;
+	private boolean dirty;
+
+	private JLabel label;
+
+	public EditorTab(FileEditor editor, String title) {
+		this.editor = editor;
+		this.title = title;
+		this.dirty = false;
+		this.label = new JLabel(title);
+
+		setLayout(new BorderLayout(15, 0));
+		setBackground(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+
+		add(label, BorderLayout.CENTER);
+
+		JButton closeButton = new JButton(new AbstractAction("X") {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				BFEditor.getInstance().getEditorPanel().closeEditor(editor);
+			}
+		});
+		closeButton.setMargin(new Insets(0, 5, 0, 5));
+		add(closeButton, BorderLayout.EAST);
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+		this.label.setText(title);
+		BFEditor.getInstance().revalidate();
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
+		this.label.setText((dirty ? "*" : "") + title);
+		BFEditor.getInstance().revalidate();
+	}
+
+}

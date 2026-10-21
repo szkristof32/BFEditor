@@ -49,9 +49,20 @@ public class EditorPanel extends JTabbedPane {
 		}
 	}
 
+	public void closeCurrentEditor() {
+		FileEditor editor = getCurrentEditor();
+		closeEditor(editor);
+	}
+
+	public void closeEditor(FileEditor editor){
+		openedFiles.remove(editor);
+		removeTabAt(indexOfComponent(editor));
+	}
+
 	private void addTabAndSwitch(String title, FileEditor editor) {
 		addTab(title, editor);
 		setSelectedIndex(getTabCount() - 1);
+		setTabComponentAt(getTabCount() - 1, editor.getTab());
 		BFEditor.getInstance().revalidate();
 	}
 
