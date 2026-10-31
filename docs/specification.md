@@ -74,12 +74,16 @@ Debug módban a virtuális konzol mellett található, itt lehet olvasni a memó
 Az Edit > Preferences menüpontra kattintva jelenik meg felugró ablakként. A program alapvető konfigurálására szolgál. A következő beállítások találhatóak benne:
 
 - Memóriaméret: futtatáskor a programhoz allokált memóriacellák száma (lásd: [a Brainfuck nyelv](#a-brainfuck-nyelv)).
+- Memóriacella túlfolyás: mi történjen, ha egy memóriacella tartalma túlfolyik (lásd: [a Brainfuck nyelv](#a-brainfuck-nyelv)).
+- Kezdeti cellaérték: a memóriacellák tartalma a program indításakor (lásd: [a Brainfuck nyelv](#a-brainfuck-nyelv)).
 
 Az ablak alján két gomb található. A Save gombra kattintva a program elmenti a beállítások módodítását, és automatikusan szerializálja a lemezre. A Cancel gombra kattintva a program elveti a beállítások módosításait. Mindkét művelet végén a beállítások ablak bezáródik.
 
 # A Brainfuck nyelv
 
 A Brainfuck egy ezoterikus nyelv, első verzióját Urban Müller készítette 1993-ban. Minden brainfuck program indításkor kap egy memóraszegmenst, amely memóriacellákból áll (ezek számát a beállítások ablakban konfigurálni, alapértelmezés: 1024), minden memóriacella egy előjel nélküli nyolc bites egész számot (C-ben: ```uint8_t```) tud tárolni. Minden programhoz tartozik ezen kívül egy instruction pointer is, amely az értelmező pozícióját tárolja a forráskódon belül, és egy data pointer, amely mindig a memóriaszegmens egyik cellájára mutat.
+
+## Utasítások
 
 A Brainfuckban nyolc utasítás található, mindegyik egy karakterből áll, ezek a következőek:
 
@@ -91,6 +95,8 @@ A Brainfuckban nyolc utasítás található, mindegyik egy karakterből áll, ez
 - ```,``` Beolvas a bemenetről egy értéket, melyet a data pointer által hivatkozott memóriacellába ír.
 - ```[``` Ha a data pointer által hivatkozott memóriacella értéke nulla, megnöveli az instruction pointert, hogy a hozzá tartozó ```]``` utasítás utánra mutasson.
 - ```]``` Ha a data pointer által hivatkozott memóriacella értéke nemnulla, csökkenti az instruction pointert, hogy a hozzá tartozó ```[``` utasításra mutasson.
+
+## Megjegyzések
 
 A ```[``` és ```]``` utasítások speciális eseteit leszámítva az értelmező minden utasítás után eggyel növeli az instruction pointer értékét, hogy az a következő utasításra mutasson.
 
