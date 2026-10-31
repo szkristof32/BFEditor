@@ -30,12 +30,12 @@ Mind az Open, a Save és a Save as művelet megszakítható, amennyiben a felhas
 
 Az edit menü segítségével az aktív fájlon lehet szerkesztési műveleteket végezni. A következő menüpontokat tartalmazza:
 
-- Undo: visszavonja a legutóbbi módosítást. Amennyiben ilyen nincs, a művelet megszakad (lásd később).
+- Undo: visszavonja a legutóbbi módosítást. Amennyiben ilyen nincs, a művelet megszakad (lásd: [módosítási előzmények](#módosítási-előzmények)).
 - Redo: újra végrehajtja a legutóbb visszavont módosítást. Amennyiben ilyen nincs, a művelet megszakad.
 - Cut: a vágólapra másolja és kitörli a bufferből a kijelölt szövegrészletet. Amennyiben semmi sincs kijelölve, a művelet megszakad.
 - Copy: a vágólapra másolja a bufferben kijelölt szövegrészletet. Amennyiben semmi sincs kijelölve, a művelet megszakad.
 - Paste: beilleszti a bufferbe a vágólapon található legfrissebb szövegrészletet. Amennyiben a vágólap üres, a művelet megszakad.
-- Preferences: megnyitja a beállítások ablakot (lásd később).
+- Preferences: megnyitja a beállítások ablakot (lásd: [beállítások ablak](#beállítások-ablak)).
 
 ### Run menü
 
@@ -45,7 +45,7 @@ A run menü segítségével lehet vezérelni a futtatókörnyezetet. A következ
 - Debug: elindítja a futtatókörnyezetben az aktív fájl végrehajtását, lehetőséget kínálva a felhasználónak, hogy utasításonként lépkedjen végig a programon.
 - Step: végrehajta az aktív fájl soron következő utasítását. Amennyiben nem fut egy program sem, le van tiltva.
 
-## Szerkeszőterület
+## Szerkesztőterület
 
 A szerkesztőterület több fülből áll. Mindegyik fül egy megnyitott fájlnak felel meg. Mindegyik fülön található egy szövegmező, amelyben a fájl (buffer) jelenlegi állapota látható (és szerkeszthető). Az itt látható kódot futtatja a futtatókörnyezet, és ezt menti a program a File > Save vagy File > Save as menüpontra kattintva. Mindegyik fülön szerepel az aktuálisan szerkesztett fájl neve. Mindegyik fül bezárható a fülön található bezárás gombra kattitva. Mindegyik fülön a fájlnév mellett látható csillag karakter (*) jelzi, ha az adott bufferben van nem mentett módosítás.
 
@@ -59,21 +59,21 @@ A futtatókörnyezet maga is két részre oszlik. A tetején egy gombsor helyezk
 
 ### A gombsor
 
-A futtatókörnyezet gombsora rendre a menüsor Run menüjének opcióit képzi le (lásd Run menü).
+A futtatókörnyezet gombsora rendre a menüsor Run menüjének opcióit képzi le (lásd: [Run menü](#run-menü)).
 
 ### Virtuális konzol
 
-A virtuális konzol szolgál be- és kimenetként a program számára. A kiírás utasítás hatására az aktív memóriacellában található karakter itt jelenik meg (lásd később), és a beolvasás utasítás hatására innen lesz betöltve az aktív memóriacellába a felhasználó általl beütött karakter.
+A virtuális konzol szolgál be- és kimenetként a program számára. A kiírás utasítás hatására az aktív memóriacellában található karakter itt jelenik meg (lásd: [a Brainfuck nyelv](#a-brainfuck-nyelv)), és a beolvasás utasítás hatására innen lesz betöltve az aktív memóriacellába a felhasználó általl beütött karakter.
 
 ### Runtime state
 
-Debug módban a virtuális konzol mellett található, itt lehet olvasni a memóriacellák aktuális tartalmát, illetve az instruction pointer értékét (lásd később).
+Debug módban a virtuális konzol mellett található, itt lehet olvasni a memóriacellák aktuális tartalmát, illetve az instruction pointer értékét (lásd: [a Brainfuck nyelv](#a-brainfuck-nyelv)).
 
 ## Beállítások ablak
 
 Az Edit > Preferences menüpontra kattintva jelenik meg felugró ablakként. A program alapvető konfigurálására szolgál. A következő beállítások találhatóak benne:
 
-- Memóriaméret: futtatáskor a programhoz allokált memóriacellák száma (lásd később).
+- Memóriaméret: futtatáskor a programhoz allokált memóriacellák száma (lásd: [a Brainfuck nyelv](#a-brainfuck-nyelv)).
 
 Az ablak alján két gomb található. A Save gombra kattintva a program elmenti a beállítások módodítását, és automatikusan szerializálja a lemezre. A Cancel gombra kattintva a program elveti a beállítások módosításait. Mindkét művelet végén a beállítások ablak bezáródik.
 
@@ -95,3 +95,19 @@ A Brainfuckban nyolc utasítás található, mindegyik egy karakterből áll, ez
 A ```[``` és ```]``` utasítások speciális eseteit leszámítva az értelmező minden utasítás után eggyel növeli az instruction pointer értékét, hogy az a következő utasításra mutasson.
 
 A ```[``` és ```]``` utasításokkal tetszőleges mennyiségű ciklus egymásba ágyazható, úgy, hogy a ```[``` és  ```]``` utasítások száma meg kell, hogy egyezzen.
+
+# Megvalósítás
+
+A programkódban külön modulban van a szerkesztő és az értelmező kódja. Az egészet a ```BFEditor``` nevű singleton osztály fogja össze, ezen keresztül tudnak a program különböző részei egymással kommunikálni, és egymás adatait lekérni.
+
+## Értelmező
+
+A Brainfuck nyelv egyszerűsége miatt az értelmezőt meg lehet valósítani egy egyszerű állapotgép segítségével: az aktuális állapotot az instruction pointer által hivatkozott utasítás adja (lásd: [a Brainfuck nyelv](#a-brainfuck-nyelv)).
+
+## Szerkesztő
+
+A szerkesztő egyes részeinek (lásd: [felépítés](#az-alkalmazás-felépítése)) kódja külön osztályokban található, és szorosan össze van kapcsolva a UI felépítésével és a megfelelő Swing osztályokkal.
+
+Például a szerkesztőterület kódja egy ```EditorPanel``` nevű osztályban található, amely a ```JPanel``` leszármazottja, így nagyon egyszerű kezelni, és hozzáadni a programablakhoz.
+
+A menük szintén külön osztályokra vannak bontva a könnyebb kezelhetőség érdekében.
