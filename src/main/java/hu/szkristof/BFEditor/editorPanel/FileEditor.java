@@ -9,6 +9,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
@@ -33,6 +34,27 @@ public class FileEditor extends JPanel {
 		textArea.setAutoscrolls(true);
 		textArea.setFont(BFEditor.getInstance().getEditorFont());
 		textArea.setDocument(new EditorDocument(editHistory));
+
+		InputMap inputMap = textArea.getInputMap();
+		ActionMap actionMap = textArea.getActionMap();
+
+		inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo");
+		inputMap.put(KeyStroke.getKeyStroke("control Y"), "redo");
+
+		actionMap.put("undo", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				editHistory.undo();
+				setBuffer(editHistory.getCurrentState());
+			}
+		});
+		actionMap.put("redo", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				editHistory.redo();
+				setBuffer(editHistory.getCurrentState());
+			}
+		});
 
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
