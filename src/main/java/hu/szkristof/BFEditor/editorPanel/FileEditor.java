@@ -5,6 +5,8 @@ import hu.szkristof.BFEditor.EditHistory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -30,26 +32,7 @@ public class FileEditor extends JPanel {
 		textArea.setLineWrap(true);
 		textArea.setAutoscrolls(true);
 		textArea.setFont(BFEditor.getInstance().getEditorFont());
-		textArea.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-					int caretPosition = textArea.getCaretPosition();
-					try {
-						editHistory.delete(caretPosition - 1, textArea.getText(caretPosition - 1, 1));
-					} catch (BadLocationException ex) {
-						ex.printStackTrace(System.err);
-					}
-				}
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				if (e.getKeyChar() == '\b') return;
-				int caretPosition = textArea.getCaretPosition();
-				editHistory.insert(caretPosition, String.valueOf(e.getKeyChar()));
-			}
-		});
+		textArea.setDocument(new EditorDocument(editHistory));
 
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -100,7 +83,10 @@ public class FileEditor extends JPanel {
 	}
 
 	public void setBuffer(String buffer) {
+		EditorDocument document = (EditorDocument) textArea.getDocument();
+		document.enable(false);
 		textArea.setText(buffer);
+		document.enable(true);
 	}
 
 	public EditHistory getEditHistory() {

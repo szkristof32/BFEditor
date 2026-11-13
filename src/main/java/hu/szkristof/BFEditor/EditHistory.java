@@ -22,7 +22,7 @@ public class EditHistory {
 	public void redo() {
 		if (historyIndex == diffs.size() - 1)
 			return;
-		executeDiff(diffs.get(historyIndex));
+		executeDiff(diffs.get(historyIndex + 1));
 		historyIndex++;
 	}
 
