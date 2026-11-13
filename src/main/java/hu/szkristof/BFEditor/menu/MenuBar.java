@@ -6,6 +6,7 @@ public class MenuBar extends JMenuBar {
 
     public MenuBar() {
         add(new FileMenu());
+		add(new EditMenu());
     }
 
 }
