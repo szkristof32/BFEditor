@@ -1,6 +1,7 @@
 package hu.szkristof.BFEditor.menu;
 
 import hu.szkristof.BFEditor.BFEditor;
+import hu.szkristof.BFEditor.DialogThread;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 
@@ -26,16 +27,14 @@ public class FileMenu extends JMenu {
 		JMenuItem openMenuItem = new JMenuItem(new AbstractAction("Open") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try (MemoryStack stack = MemoryStack.stackPush()) {
-					PointerBuffer buffer = stack.callocPointer(512);
-					int status = NFD_OpenDialog(buffer, null, (CharSequence) null);
-					if (status == NFD_OKAY) {
-						BFEditor.getInstance().getEditorPanel().openFile(new File(buffer.getStringASCII()));
-					} else if (status == NFD_CANCEL) {
-						System.out.println("User cancelled");
-					} else {
-						System.err.println("Error occurred: " + NFD_GetError());
-					}
+				DialogThread dialogThread = BFEditor.getInstance().getDialogThread();
+				dialogThread.openFile();
+				try {
+					File file = dialogThread.getLastFile();
+					if (file != null)
+						BFEditor.getInstance().getEditorPanel().openFile(file);
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
 				}
 			}
 		});
@@ -46,17 +45,15 @@ public class FileMenu extends JMenu {
 			public void actionPerformed(ActionEvent e) {
 				boolean success = BFEditor.getInstance().getEditorPanel().saveCurrentFile();
 				if (success) return;
-				
-				try (MemoryStack stack = MemoryStack.stackPush()) {
-					PointerBuffer buffer = stack.callocPointer(512);
-					int status = NFD_SaveDialog(buffer, null, (CharSequence) null, null);
-					if (status == NFD_OKAY) {
-						BFEditor.getInstance().getEditorPanel().saveFile(new File(buffer.getStringASCII()));
-					} else if (status == NFD_CANCEL) {
-						System.out.println("User cancelled");
-					} else {
-						System.err.println("Error occurred: " + NFD_GetError());
-					}
+
+				DialogThread dialogThread = BFEditor.getInstance().getDialogThread();
+				dialogThread.saveFile();
+				try {
+					File file = dialogThread.getLastFile();
+					if (file != null)
+						BFEditor.getInstance().getEditorPanel().saveFile(file);
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
 				}
 			}
 		});
@@ -65,16 +62,14 @@ public class FileMenu extends JMenu {
 		JMenuItem saveAsMenuItem = new JMenuItem(new AbstractAction("Save As") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try (MemoryStack stack = MemoryStack.stackPush()) {
-					PointerBuffer buffer = stack.callocPointer(512);
-					int status = NFD_SaveDialog(buffer, null, (CharSequence) null, null);
-					if (status == NFD_OKAY) {
-						BFEditor.getInstance().getEditorPanel().saveFile(new File(buffer.getStringASCII()));
-					} else if (status == NFD_CANCEL) {
-						System.out.println("User cancelled");
-					} else {
-						System.err.println("Error occurred: " + NFD_GetError());
-					}
+				DialogThread dialogThread = BFEditor.getInstance().getDialogThread();
+				dialogThread.saveFile();
+				try {
+					File file = dialogThread.getLastFile();
+					if (file != null)
+						BFEditor.getInstance().getEditorPanel().saveFile(file);
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
 				}
 			}
 		});

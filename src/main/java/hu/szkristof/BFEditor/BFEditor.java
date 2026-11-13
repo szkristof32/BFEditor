@@ -7,11 +7,9 @@ import hu.szkristof.BFEngine.BFEngine;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-
-import static org.lwjgl.util.nfd.NativeFileDialog.NFD_Init;
-import static org.lwjgl.util.nfd.NativeFileDialog.NFD_Quit;
 
 public class BFEditor extends JFrame {
 
@@ -21,11 +19,15 @@ public class BFEditor extends JFrame {
 	private Font editorFont = null;
 
 	private BFEngine engine = null;
+	private DialogThread dialogThread = null;
 
 	public BFEditor() {
 		super("BFEditor");
 		instance = this;
-		this.engine = new BFEngine();
+
+		engine = new BFEngine();
+		dialogThread = new DialogThread();
+		dialogThread.start();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1280, 720);
@@ -46,6 +48,18 @@ public class BFEditor extends JFrame {
 
 		add(splitPane, BorderLayout.CENTER);
 		setVisible(true);
+
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				dialogThread.stop();
+				try {
+					dialogThread.join();
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 	}
 
 	private JPanel createSidePanel() {
@@ -71,6 +85,10 @@ public class BFEditor extends JFrame {
 		return editorPanel;
 	}
 
+	public DialogThread getDialogThread() {
+		return dialogThread;
+	}
+
 	public Font getEditorFont() {
 		return editorFont;
 	}
@@ -84,9 +102,7 @@ public class BFEditor extends JFrame {
 	}
 
 	static void main(String[] args) {
-		NFD_Init();
 		new BFEditor();
-		NFD_Quit();
 	}
 
 }
