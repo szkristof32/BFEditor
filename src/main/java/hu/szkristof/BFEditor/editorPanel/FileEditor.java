@@ -38,20 +38,37 @@ public class FileEditor extends JPanel {
 		InputMap inputMap = textArea.getInputMap();
 		ActionMap actionMap = textArea.getActionMap();
 
-		inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo");
-		inputMap.put(KeyStroke.getKeyStroke("control Y"), "redo");
-
-		actionMap.put("undo", new AbstractAction() {
+		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control Z"), "undo", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				editHistory.undo();
 				setBuffer(editHistory.getCurrentState());
 			}
 		});
-		actionMap.put("redo", new AbstractAction() {
+		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control Y"), "redo", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				editHistory.redo();
+				setBuffer(editHistory.getCurrentState());
+			}
+		});
+		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control C"), "my_copy", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				copy();
+			}
+		});
+		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control V"), "my_paste", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				paste();
+				setBuffer(editHistory.getCurrentState());
+			}
+		});
+		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control X"), "my_cut", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cut();
 				setBuffer(editHistory.getCurrentState());
 			}
 		});
@@ -86,6 +103,23 @@ public class FileEditor extends JPanel {
 				BFEditor.getInstance().revalidate();
 			}
 		}
+	}
+
+	private void addShortcut(InputMap inputMap, ActionMap actionMap, KeyStroke keyStroke, Object key, AbstractAction action) {
+		inputMap.put(keyStroke, key);
+		actionMap.put(key, action);
+	}
+
+	public void copy() {
+		textArea.copy();
+	}
+
+	public void paste() {
+		textArea.paste();
+	}
+
+	public void cut() {
+		textArea.cut();
 	}
 
 	public EditorTab getTab() {

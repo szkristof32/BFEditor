@@ -35,6 +35,9 @@ public class EditMenu extends JMenu {
 		JMenuItem cutMenuItem = new JMenuItem(new AbstractAction("Cut") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				FileEditor currentEditor = BFEditor.getInstance().getEditorPanel().getCurrentEditor();
+				currentEditor.cut();
+				currentEditor.setBuffer(currentEditor.getEditHistory().getCurrentState());
 			}
 		});
 		add(cutMenuItem);
@@ -42,6 +45,8 @@ public class EditMenu extends JMenu {
 		JMenuItem copyMenuItem = new JMenuItem(new AbstractAction("Copy") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				FileEditor currentEditor = BFEditor.getInstance().getEditorPanel().getCurrentEditor();
+				currentEditor.copy();
 			}
 		});
 		add(copyMenuItem);
@@ -49,6 +54,9 @@ public class EditMenu extends JMenu {
 		JMenuItem pasteMenuItem = new JMenuItem(new AbstractAction("Paste") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				FileEditor currentEditor = BFEditor.getInstance().getEditorPanel().getCurrentEditor();
+				currentEditor.paste();
+				currentEditor.setBuffer(currentEditor.getEditHistory().getCurrentState());
 			}
 		});
 		add(pasteMenuItem);
