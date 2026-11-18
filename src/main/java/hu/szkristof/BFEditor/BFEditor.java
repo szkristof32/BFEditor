@@ -2,6 +2,7 @@ package hu.szkristof.BFEditor;
 
 import hu.szkristof.BFEditor.editorPanel.EditorPanel;
 import hu.szkristof.BFEditor.menu.MenuBar;
+import hu.szkristof.BFEditor.runner.RunnerPanel;
 import hu.szkristof.BFEngine.BFEngine;
 
 import javax.swing.*;
@@ -9,7 +10,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class BFEditor extends JFrame {
 
@@ -18,6 +21,9 @@ public class BFEditor extends JFrame {
 	private EditorPanel editorPanel = null;
 	private Font editorFont = null;
 
+	private RunnerPanel runnerPanel = null;
+
+	private ByteArrayOutputStream output;
 	private BFEngine engine = null;
 	private DialogThread dialogThread = null;
 
@@ -25,7 +31,10 @@ public class BFEditor extends JFrame {
 		super("BFEditor");
 		instance = this;
 
-		engine = new BFEngine();
+		output = new ByteArrayOutputStream();
+		PrintStream printStream = new PrintStream(output, true);
+
+		engine = new BFEngine(printStream);
 		dialogThread = new DialogThread();
 		dialogThread.start();
 
@@ -38,18 +47,24 @@ public class BFEditor extends JFrame {
 
 		setJMenuBar(new MenuBar());
 
-		JPanel sidePanel = createSidePanel();
 		editorPanel = new EditorPanel();
 		editorPanel.newFile();
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidePanel, editorPanel);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setDividerLocation(150);
+		runnerPanel = new RunnerPanel();
 
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorPanel,  runnerPanel);
+		splitPane.setDividerLocation(400);
+		splitPane.setOneTouchExpandable(true);
 		add(splitPane, BorderLayout.CENTER);
+
 		setVisible(true);
 
 		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				printStream.close();
+			}
+
 			@Override
 			public void windowClosed(WindowEvent e) {
 				dialogThread.stop();

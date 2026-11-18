@@ -2,6 +2,7 @@ package hu.szkristof.BFEngine;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.util.Arrays;
 
@@ -10,14 +11,24 @@ public class BFEngine {
 	private static final int MEMORY_SIZE = 3000;
 
 	private String source;
+	private PrintStream output;
 
 	private final byte[] memory;
 	private int dataPointer;
 	private int programCounter;
 
-	public BFEngine() {
+	public BFEngine(){
+		this(System.out);
+	}
+
+	public BFEngine(PrintStream output) {
 		this.memory = new byte[MEMORY_SIZE];
+		this.output = output;
 		reset();
+	}
+
+	public PrintStream getOutput() {
+		return output;
 	}
 
 	public void reset() {
@@ -49,7 +60,7 @@ public class BFEngine {
 					memory[dataPointer]--;
 					break;
 				case '.':
-					System.out.print((char) memory[dataPointer]);
+					output.print((char) memory[dataPointer]);
 					break;
 				case ',':
 					Reader reader = new InputStreamReader(System.in);
@@ -73,7 +84,6 @@ public class BFEngine {
 
 			programCounter++;
 		}
-		System.out.println();
 	}
 
 	private int searchLoopStart() {

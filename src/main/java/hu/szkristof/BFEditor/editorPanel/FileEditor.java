@@ -76,6 +76,7 @@ public class FileEditor extends JPanel {
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setBackground(Color.white);
 
 		try {
 			reloadFromDisk();
