@@ -19,6 +19,7 @@ public class EditMenu extends JMenu {
 				currentEditor.setBuffer(currentEditor.getEditHistory().getCurrentState());
 			}
 		});
+		undoMenuItem.setAccelerator(KeyStroke.getKeyStroke("control Z"));
 		add(undoMenuItem);
 
 		JMenuItem redoMenuItem = new JMenuItem(new AbstractAction("Redo") {
@@ -29,6 +30,7 @@ public class EditMenu extends JMenu {
 				currentEditor.setBuffer(currentEditor.getEditHistory().getCurrentState());
 			}
 		});
+		redoMenuItem.setAccelerator(KeyStroke.getKeyStroke("control Y"));
 		add(redoMenuItem);
 		addSeparator();
 
@@ -40,6 +42,7 @@ public class EditMenu extends JMenu {
 				currentEditor.setBuffer(currentEditor.getEditHistory().getCurrentState());
 			}
 		});
+		cutMenuItem.setAccelerator(KeyStroke.getKeyStroke("control X"));
 		add(cutMenuItem);
 
 		JMenuItem copyMenuItem = new JMenuItem(new AbstractAction("Copy") {
@@ -49,6 +52,7 @@ public class EditMenu extends JMenu {
 				currentEditor.copy();
 			}
 		});
+		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke("control C"));
 		add(copyMenuItem);
 
 		JMenuItem pasteMenuItem = new JMenuItem(new AbstractAction("Paste") {
@@ -59,6 +63,7 @@ public class EditMenu extends JMenu {
 				currentEditor.setBuffer(currentEditor.getEditHistory().getCurrentState());
 			}
 		});
+		pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke("control V"));
 		add(pasteMenuItem);
 		addSeparator();
 
@@ -67,6 +72,7 @@ public class EditMenu extends JMenu {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
+		preferencesMenuItem.setAccelerator(KeyStroke.getKeyStroke("control P"));
 		add(preferencesMenuItem);
 	}
 

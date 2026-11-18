@@ -22,6 +22,7 @@ public class FileMenu extends JMenu {
 				BFEditor.getInstance().getEditorPanel().newFile();
 			}
 		});
+		newMenuItem.setAccelerator(KeyStroke.getKeyStroke("control N"));
 		add(newMenuItem);
 
 		JMenuItem openMenuItem = new JMenuItem(new AbstractAction("Open") {
@@ -38,6 +39,7 @@ public class FileMenu extends JMenu {
 				}
 			}
 		});
+		openMenuItem.setAccelerator(KeyStroke.getKeyStroke("control O"));
 		add(openMenuItem);
 
 		JMenuItem saveMenuItem = new JMenuItem(new AbstractAction("Save") {
@@ -57,6 +59,7 @@ public class FileMenu extends JMenu {
 				}
 			}
 		});
+		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke("control S"));
 		add(saveMenuItem);
 
 		JMenuItem saveAsMenuItem = new JMenuItem(new AbstractAction("Save As") {
@@ -73,6 +76,7 @@ public class FileMenu extends JMenu {
 				}
 			}
 		});
+		saveAsMenuItem.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
 		add(saveAsMenuItem);
 
 		addSeparator();
@@ -83,6 +87,7 @@ public class FileMenu extends JMenu {
 				BFEditor.getInstance().requestClose();
 			}
 		});
+		exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
 		add(exitMenuItem);
 	}
 
