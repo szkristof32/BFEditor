@@ -5,13 +5,8 @@ import hu.szkristof.BFEditor.EditHistory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.*;
 
 public class FileEditor extends JPanel {
@@ -21,6 +16,8 @@ public class FileEditor extends JPanel {
 	private File file;
 	private JTextArea textArea;
 	private EditHistory editHistory;
+
+	private int lastSavedHistory = -1;
 
 	public FileEditor(File file) {
 		super(new GridLayout(1, 1));
@@ -33,7 +30,7 @@ public class FileEditor extends JPanel {
 		textArea.setLineWrap(true);
 		textArea.setAutoscrolls(true);
 		textArea.setFont(BFEditor.getInstance().getEditorFont());
-		textArea.setDocument(new EditorDocument(editHistory));
+		textArea.setDocument(new EditorDocument(editHistory, this));
 
 		InputMap inputMap = textArea.getInputMap();
 		ActionMap actionMap = textArea.getActionMap();
@@ -101,6 +98,7 @@ public class FileEditor extends JPanel {
 				}
 				textArea.setText(content.toString());
 				textArea.setCaretPosition(0);
+				updateLastSavedHistory();
 				BFEditor.getInstance().revalidate();
 			}
 		}
@@ -109,6 +107,15 @@ public class FileEditor extends JPanel {
 	private void addShortcut(InputMap inputMap, ActionMap actionMap, KeyStroke keyStroke, Object key, AbstractAction action) {
 		inputMap.put(keyStroke, key);
 		actionMap.put(key, action);
+	}
+
+	public int getLastSavedHistory() {
+		return lastSavedHistory;
+	}
+
+	public void updateLastSavedHistory() {
+		lastSavedHistory = editHistory.getHistoryIndex();
+		tab.setDirty(false);
 	}
 
 	public void copy() {

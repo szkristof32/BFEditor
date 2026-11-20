@@ -28,10 +28,11 @@ public class EditorPanel extends JTabbedPane {
 	}
 
 	public boolean saveCurrentFile() {
-		File file = getCurrentFile();
-		if (file == null)
+		FileEditor editor = getCurrentEditor();
+		if (editor.getFile() == null)
 			return false;
-		saveFile(file);
+		saveFile(editor.getFile());
+		editor.updateLastSavedHistory();
 		return true;
 	}
 

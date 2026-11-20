@@ -72,6 +72,10 @@ public class EditHistory {
 		return currentState;
 	}
 
+	public int getHistoryIndex() {
+		return historyIndex;
+	}
+
 	private record Diff(int removeStart, String remove, int addStart, String add) {
 	}
 
