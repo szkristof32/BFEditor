@@ -7,13 +7,14 @@ public class EditHistory {
 
 	private String currentState = "";
 	private List<Diff> diffs = new ArrayList<>();
+	private int startingIndex = 0;
 	private int historyIndex = -1;
 
 	public EditHistory() {
 	}
 
 	public void undo() {
-		if (historyIndex == -1)
+		if (historyIndex <= startingIndex)
 			return;
 		revertDiff(diffs.get(historyIndex));
 		historyIndex--;
@@ -66,6 +67,10 @@ public class EditHistory {
 		if (diff.remove() != null)
 			temp = temp.substring(0, diff.removeStart()) + diff.remove() + temp.substring(diff.removeStart());
 		currentState = temp;
+	}
+
+	public void setStartingIndex(int startingIndex) {
+		this.startingIndex = startingIndex;
 	}
 
 	public String getCurrentState() {

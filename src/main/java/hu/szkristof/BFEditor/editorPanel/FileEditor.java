@@ -77,6 +77,7 @@ public class FileEditor extends JPanel {
 
 		try {
 			reloadFromDisk();
+			editHistory.setStartingIndex(editHistory.getHistoryIndex());
 		} catch (IOException e) {
 			System.err.println("Error during reloading");
 			e.printStackTrace();
