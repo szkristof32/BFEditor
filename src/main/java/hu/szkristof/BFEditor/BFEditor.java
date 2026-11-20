@@ -18,6 +18,8 @@ public class BFEditor extends JFrame {
 
 	private static BFEditor instance = null;
 
+	private PreferencesDialog preferencesDialog;
+
 	private EditorPanel editorPanel = null;
 	private Font editorFont = null;
 
@@ -30,6 +32,8 @@ public class BFEditor extends JFrame {
 	public BFEditor() {
 		super("BFEditor");
 		instance = this;
+
+		preferencesDialog = new PreferencesDialog();
 
 		output = new ByteArrayOutputStream();
 		PrintStream printStream = new PrintStream(output, true);
@@ -52,7 +56,7 @@ public class BFEditor extends JFrame {
 
 		runnerPanel = new RunnerPanel();
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorPanel,  runnerPanel);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, editorPanel, runnerPanel);
 		splitPane.setDividerLocation(400);
 		splitPane.setOneTouchExpandable(true);
 		add(splitPane, BorderLayout.CENTER);
@@ -94,6 +98,14 @@ public class BFEditor extends JFrame {
 		sidePanel.add(runButton);
 
 		return sidePanel;
+	}
+
+	public void openPreferences() {
+		preferencesDialog.setVisible(true);
+	}
+
+	public Preferences getPreferences() {
+		return preferencesDialog.getPreferences();
 	}
 
 	public EditorPanel getEditorPanel() {

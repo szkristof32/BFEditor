@@ -70,6 +70,7 @@ public class EditMenu extends JMenu {
 		JMenuItem preferencesMenuItem = new JMenuItem(new AbstractAction("Preferences") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				BFEditor.getInstance().openPreferences();
 			}
 		});
 		preferencesMenuItem.setAccelerator(KeyStroke.getKeyStroke("control P"));
