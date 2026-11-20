@@ -143,14 +143,20 @@ public class FileEditor extends JPanel {
 		this.file = file;
 	}
 
+	public JTextArea getTextArea() {
+		return textArea;
+	}
+
 	public String getBuffer() {
 		return textArea.getText();
 	}
 
 	public void setBuffer(String buffer) {
 		EditorDocument document = (EditorDocument) textArea.getDocument();
+		int caretPosition = textArea.getCaretPosition();
 		document.enable(false);
 		textArea.setText(buffer);
+		textArea.setCaretPosition(Math.min(caretPosition, buffer.length()));
 		document.enable(true);
 	}
 
