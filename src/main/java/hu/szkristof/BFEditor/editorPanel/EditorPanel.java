@@ -44,6 +44,7 @@ public class EditorPanel extends JTabbedPane {
 				replaceCurrentTab(file);
 				getCurrentEditor().setFile(file);
 			}
+			replaceCurrentTab(file);
 		} catch (IOException e) {
 			System.err.println("Error during saving");
 			e.printStackTrace();
@@ -69,7 +70,9 @@ public class EditorPanel extends JTabbedPane {
 
 	private void replaceCurrentTab(File file) {
 		int selectedIndex = getSelectedIndex();
-		setTitleAt(selectedIndex, file.getName());
+		EditorTab tab = (EditorTab) getTabComponentAt(selectedIndex);
+		tab.setTitle(file.getName());
+		tab.setDirty(false);
 	}
 
 	public FileEditor getCurrentEditor() {
