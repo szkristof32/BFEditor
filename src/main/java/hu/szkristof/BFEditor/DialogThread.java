@@ -122,6 +122,8 @@ public class DialogThread extends Thread {
 		while (status == DialogStatus.Working)
 			wait();
 
+		File lastFile = this.lastFile;
+		this.lastFile = null;
 		return lastFile;
 	}
 }
