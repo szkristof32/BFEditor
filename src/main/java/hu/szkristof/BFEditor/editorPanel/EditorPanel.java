@@ -23,6 +23,10 @@ public class EditorPanel extends JTabbedPane {
 
 	public void openFile(File file) {
 		FileEditor editor = new FileEditor(file);
+		if (getCurrentEditor().getFile() == null) {
+			openedFiles.clear();
+			closeCurrentEditor();
+		}
 		openedFiles.add(editor);
 		addTabAndSwitch(file.getName(), editor);
 	}
@@ -56,7 +60,7 @@ public class EditorPanel extends JTabbedPane {
 		closeEditor(editor);
 	}
 
-	public void closeEditor(FileEditor editor){
+	public void closeEditor(FileEditor editor) {
 		openedFiles.remove(editor);
 		removeTabAt(indexOfComponent(editor));
 	}
