@@ -37,7 +37,7 @@ public class BFEditor extends JFrame {
 		dialogThread = new DialogThread();
 		dialogThread.start();
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setSize(1280, 720);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
@@ -65,7 +65,10 @@ public class BFEditor extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				if (!editorPanel.shouldAllClose())
+					return;
 				printStream.close();
+				BFEditor.this.dispose();
 			}
 
 			@Override
@@ -76,6 +79,7 @@ public class BFEditor extends JFrame {
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
 				}
+				System.exit(0);
 			}
 		});
 	}

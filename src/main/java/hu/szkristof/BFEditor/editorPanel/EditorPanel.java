@@ -62,12 +62,31 @@ public class EditorPanel extends JTabbedPane {
 		}
 	}
 
+	public boolean shouldAllClose() {
+		for (FileEditor editor : openedFiles) {
+			if (!editor.getTab().isDirty())
+				continue;
+
+			return shouldClose(editor);
+		}
+		return true;
+	}
+
+	public boolean shouldClose(FileEditor editor) {
+		boolean isDirty = editor.getTab().isDirty();
+		if (!isDirty) return true;
+
+		int result = JOptionPane.showConfirmDialog(BFEditor.getInstance(), "There are unsaved changes. Are you sure you want to proceed?", "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		return result == JOptionPane.YES_OPTION;
+	}
+
 	public void closeCurrentEditor() {
 		FileEditor editor = getCurrentEditor();
 		closeEditor(editor);
 	}
 
 	public void closeEditor(FileEditor editor) {
+		if (!shouldClose(editor)) return;
 		openedFiles.remove(editor);
 		removeTabAt(indexOfComponent(editor));
 	}

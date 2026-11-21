@@ -4,6 +4,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.util.nfd.NativeFileDialog.*;
 import static org.lwjgl.util.nfd.NativeFileDialog.NFD_CANCEL;
@@ -16,7 +17,8 @@ public class DialogThread extends Thread {
 
 		None,
 		Open,
-		Save
+		Save,
+		Invalid
 
 	}
 
@@ -28,7 +30,7 @@ public class DialogThread extends Thread {
 
 	}
 
-	private boolean running = true;
+	private final AtomicBoolean running = new AtomicBoolean(true);
 	private DialogAction action = DialogAction.None;
 	private DialogStatus status = DialogStatus.None;
 	private File lastFile = null;
@@ -38,7 +40,8 @@ public class DialogThread extends Thread {
 	}
 
 	public synchronized void stop() {
-		running = false;
+		running.set(false);
+		action = DialogAction.Invalid;
 		notifyAll();
 	}
 
@@ -48,7 +51,7 @@ public class DialogThread extends Thread {
 
 		status = DialogStatus.Idle;
 
-		while (running) {
+		while (running.get()) {
 			while (action == DialogAction.None) {
 				try {
 					wait();
