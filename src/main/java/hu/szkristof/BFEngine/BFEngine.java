@@ -13,7 +13,7 @@ public class BFEngine {
 	private PrintStream output;
 	private InputStream input;
 
-	private byte[] memory;
+	private char[] memory;
 	private int dataPointer;
 	private int programCounter;
 
@@ -24,7 +24,7 @@ public class BFEngine {
 	public BFEngine(PrintStream output, InputStream input) {
 		Preferences prefs = BFEditor.getInstance().getPreferences();
 
-		this.memory = new byte[prefs.getMemoryCellCount()];
+		this.memory = new char[prefs.getMemoryCellCount()];
 		this.output = output;
 		this.input = input;
 
@@ -42,8 +42,8 @@ public class BFEngine {
 		this.dataPointer = 0;
 
 		if (memory.length != prefs.getMemoryCellCount())
-			this.memory = new byte[prefs.getMemoryCellCount()];
-		Arrays.fill(this.memory, (byte) prefs.getDefaultMemoryCellValue());
+			this.memory = new char[prefs.getMemoryCellCount()];
+		Arrays.fill(this.memory, (char) prefs.getDefaultMemoryCellValue());
 	}
 
 	public void reset(String source) {
@@ -78,22 +78,22 @@ public class BFEngine {
 				case '+':
 					switch (prefs.getMemoryCellOverflowBehaviour()) {
 						case WrapAround -> memory[dataPointer]++;
-						case Cap -> memory[dataPointer] = (byte) Math.max(memory[dataPointer] + 1, memory[dataPointer]);
+						case Cap -> memory[dataPointer] = (char) Math.max((memory[dataPointer] + 1) % 256, memory[dataPointer]);
 						default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
 					}
 					break;
 				case '-':
 					switch (prefs.getMemoryCellOverflowBehaviour()) {
 						case WrapAround -> memory[dataPointer]--;
-						case Cap -> memory[dataPointer] = (byte) Math.min(memory[dataPointer] - 1, memory[dataPointer]);
+						case Cap -> memory[dataPointer] = (char) Math.min((memory[dataPointer] - 1) % 256, memory[dataPointer]);
 						default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
 					}
 					break;
 				case '.':
-					output.print((char) memory[dataPointer]);
+					output.print(memory[dataPointer]);
 					break;
 				case ',':
-					memory[dataPointer] = (byte) input.read();
+					memory[dataPointer] = (char) input.read();
 					break;
 				case '[':
 					if (memory[dataPointer] == 0) {
