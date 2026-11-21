@@ -22,6 +22,13 @@ public class EditorPanel extends JTabbedPane {
 	}
 
 	public void openFile(File file) {
+		for (int i = 0; i < openedFiles.size(); i++) {
+			if (openedFiles.get(i).getFile() != null && openedFiles.get(i).getFile().equals(file)) {
+				setSelectedIndex(i);
+				return;
+			}
+		}
+
 		FileEditor editor = new FileEditor(file);
 		if (getCurrentEditor().getFile() == null) {
 			openedFiles.clear();
