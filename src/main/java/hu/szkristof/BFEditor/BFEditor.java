@@ -60,7 +60,7 @@ public class BFEditor extends JFrame {
 
 		PrintStream printStream = new PrintStream(runnerPanel.getOutput(), true);
 
-		engine = new BFEngine(printStream);
+		engine = new BFEngine(printStream, runnerPanel.getInput());
 
 		addWindowListener(new WindowAdapter() {
 			@Override

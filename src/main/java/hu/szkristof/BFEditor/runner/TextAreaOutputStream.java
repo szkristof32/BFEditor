@@ -1,7 +1,6 @@
-package hu.szkristof.BFEditor;
+package hu.szkristof.BFEditor.runner;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.io.OutputStream;
 
 public class TextAreaOutputStream extends OutputStream {
@@ -18,7 +17,8 @@ public class TextAreaOutputStream extends OutputStream {
 		if (b == '\r')
 			return;
 		if (b == '\n') {
-			String text = stringBuilder + "\n";
+			stringBuilder.append('\n');
+			final String text = stringBuilder.toString();
 			SwingUtilities.invokeLater(() -> {
 				textArea.append(text);
 			});

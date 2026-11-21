@@ -1,18 +1,17 @@
 package hu.szkristof.BFEditor.runner;
 
 import hu.szkristof.BFEditor.BFEditor;
-import hu.szkristof.BFEditor.TextAreaOutputStream;
 import hu.szkristof.BFEngine.BFEngine;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
-import java.io.PrintStream;
 
 public class RunnerPanel extends JPanel {
 
 	private JTextArea virtualConsole;
+	private TextAreaInputStream input;
 	private TextAreaOutputStream output;
 
 	public RunnerPanel() {
@@ -25,11 +24,7 @@ public class RunnerPanel extends JPanel {
 		executeButton.addActionListener(_ -> {
 			BFEngine engine = BFEditor.getInstance().getEngine();
 			engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
-			try {
-				engine.execute();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			engine.execute();
 		});
 		buttonsPanel.add(executeButton);
 
@@ -48,9 +43,17 @@ public class RunnerPanel extends JPanel {
 		virtualConsole.setBorder(new EmptyBorder(5, 5, 5, 5));
 		virtualConsole.setFont(BFEditor.getInstance().getEditorFont());
 
-		add(virtualConsole, BorderLayout.CENTER);
+		JScrollPane scrollPane = new JScrollPane(virtualConsole);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
+		add(scrollPane, BorderLayout.CENTER);
+
+		input = new TextAreaInputStream(virtualConsole);
 		output = new TextAreaOutputStream(virtualConsole);
+	}
+
+	public TextAreaInputStream getInput() {
+		return input;
 	}
 
 	public TextAreaOutputStream getOutput() {

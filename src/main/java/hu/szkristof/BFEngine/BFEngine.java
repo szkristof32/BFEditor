@@ -3,30 +3,31 @@ package hu.szkristof.BFEngine;
 import hu.szkristof.BFEditor.BFEditor;
 import hu.szkristof.BFEditor.Preferences;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.Reader;
+import javax.swing.*;
+import java.io.*;
 import java.util.Arrays;
 
 public class BFEngine {
 
 	private String source;
 	private PrintStream output;
+	private InputStream input;
 
 	private byte[] memory;
 	private int dataPointer;
 	private int programCounter;
 
 	public BFEngine() {
-		this(System.out);
+		this(System.out, System.in);
 	}
 
-	public BFEngine(PrintStream output) {
+	public BFEngine(PrintStream output, InputStream input) {
 		Preferences prefs = BFEditor.getInstance().getPreferences();
 
 		this.memory = new byte[prefs.getMemoryCellCount()];
 		this.output = output;
+		this.input = input;
+
 		reset();
 	}
 
@@ -50,7 +51,18 @@ public class BFEngine {
 		reset();
 	}
 
-	public void execute() throws IOException {
+	public void execute() {
+		Thread interpreterThread = new Thread(() -> {
+			try {
+				executeImpl();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
+		interpreterThread.start();
+	}
+
+	private void executeImpl() throws IOException {
 		Preferences prefs = BFEditor.getInstance().getPreferences();
 
 		while (programCounter < source.length()) {
@@ -81,11 +93,7 @@ public class BFEngine {
 					output.print((char) memory[dataPointer]);
 					break;
 				case ',':
-					Reader reader = new InputStreamReader(System.in);
-					char[] buffer = {0};
-					int bytesRead = reader.read(buffer, 0, 1);
-					if (bytesRead == 1)
-						memory[dataPointer] = (byte) buffer[0];
+					memory[dataPointer] = (byte) input.read();
 					break;
 				case '[':
 					if (memory[dataPointer] == 0) {
@@ -100,6 +108,8 @@ public class BFEngine {
 
 			programCounter++;
 		}
+
+		output.println();
 	}
 
 	private int searchLoopStart() {
