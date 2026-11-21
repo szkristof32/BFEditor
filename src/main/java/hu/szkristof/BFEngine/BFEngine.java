@@ -1,5 +1,8 @@
 package hu.szkristof.BFEngine;
 
+import hu.szkristof.BFEditor.BFEditor;
+import hu.szkristof.BFEditor.Preferences;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -8,21 +11,21 @@ import java.util.Arrays;
 
 public class BFEngine {
 
-	private static final int MEMORY_SIZE = 3000;
-
 	private String source;
 	private PrintStream output;
 
-	private final byte[] memory;
+	private byte[] memory;
 	private int dataPointer;
 	private int programCounter;
 
-	public BFEngine(){
+	public BFEngine() {
 		this(System.out);
 	}
 
 	public BFEngine(PrintStream output) {
-		this.memory = new byte[MEMORY_SIZE];
+		Preferences prefs = BFEditor.getInstance().getPreferences();
+
+		this.memory = new byte[prefs.getMemoryCellCount()];
 		this.output = output;
 		reset();
 	}
@@ -32,9 +35,14 @@ public class BFEngine {
 	}
 
 	public void reset() {
+		Preferences prefs = BFEditor.getInstance().getPreferences();
+
 		this.programCounter = 0;
 		this.dataPointer = 0;
-		Arrays.fill(this.memory, (byte) 0);
+
+		if (memory.length != prefs.getMemoryCellCount())
+			this.memory = new byte[prefs.getMemoryCellCount()];
+		Arrays.fill(this.memory, (byte) prefs.getDefaultMemoryCellValue());
 	}
 
 	public void reset(String source) {
@@ -42,7 +50,9 @@ public class BFEngine {
 		reset();
 	}
 
-	public void run() throws IOException {
+	public void execute() throws IOException {
+		Preferences prefs = BFEditor.getInstance().getPreferences();
+
 		while (programCounter < source.length()) {
 			char currentInstruction = source.charAt(programCounter);
 
@@ -54,10 +64,18 @@ public class BFEngine {
 					dataPointer--;
 					break;
 				case '+':
-					memory[dataPointer]++;
+					switch (prefs.getMemoryCellOverflowBehaviour()) {
+						case WrapAround -> memory[dataPointer]++;
+						case Cap -> memory[dataPointer] = (byte) Math.max(memory[dataPointer] + 1, memory[dataPointer]);
+						default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
+					}
 					break;
 				case '-':
-					memory[dataPointer]--;
+					switch (prefs.getMemoryCellOverflowBehaviour()) {
+						case WrapAround -> memory[dataPointer]--;
+						case Cap -> memory[dataPointer] = (byte) Math.min(memory[dataPointer] - 1, memory[dataPointer]);
+						default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
+					}
 					break;
 				case '.':
 					output.print((char) memory[dataPointer]);
@@ -71,14 +89,12 @@ public class BFEngine {
 					break;
 				case '[':
 					if (memory[dataPointer] == 0) {
-						int loopEnd = searchLoopEnd();
-						programCounter = loopEnd;
+						programCounter = searchLoopEnd();
 						continue;
 					}
 					break;
 				case ']':
-					int loopStart = searchLoopStart();
-					programCounter = loopStart;
+					programCounter = searchLoopStart();
 					continue;
 			}
 

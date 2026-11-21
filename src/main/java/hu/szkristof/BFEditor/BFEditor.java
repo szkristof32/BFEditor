@@ -25,7 +25,6 @@ public class BFEditor extends JFrame {
 
 	private RunnerPanel runnerPanel = null;
 
-	private ByteArrayOutputStream output;
 	private BFEngine engine = null;
 	private DialogThread dialogThread = null;
 
@@ -35,10 +34,6 @@ public class BFEditor extends JFrame {
 
 		preferencesDialog = new PreferencesDialog();
 
-		output = new ByteArrayOutputStream();
-		PrintStream printStream = new PrintStream(output, true);
-
-		engine = new BFEngine(printStream);
 		dialogThread = new DialogThread();
 		dialogThread.start();
 
@@ -63,6 +58,10 @@ public class BFEditor extends JFrame {
 
 		setVisible(true);
 
+		PrintStream printStream = new PrintStream(runnerPanel.getOutput(), true);
+
+		engine = new BFEngine(printStream);
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -81,31 +80,16 @@ public class BFEditor extends JFrame {
 		});
 	}
 
-	private JPanel createSidePanel() {
-		JPanel sidePanel = new JPanel(new FlowLayout());
-
-		JButton runButton = new JButton(new AbstractAction("Run") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				engine.reset(editorPanel.getCurrentBuffer());
-				try {
-					engine.run();
-				} catch (IOException ex) {
-					System.err.println("Error during execution");
-				}
-			}
-		});
-		sidePanel.add(runButton);
-
-		return sidePanel;
-	}
-
 	public void openPreferences() {
 		preferencesDialog.setVisible(true);
 	}
 
 	public Preferences getPreferences() {
 		return preferencesDialog.getPreferences();
+	}
+
+	public BFEngine getEngine() {
+		return engine;
 	}
 
 	public EditorPanel getEditorPanel() {
