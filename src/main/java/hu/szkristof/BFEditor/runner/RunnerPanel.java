@@ -37,6 +37,9 @@ public class RunnerPanel extends JPanel {
 		buttonsPanel.add(debugButton);
 
 		JButton stopButton = new JButton("Stop");
+		stopButton.addActionListener(_->{
+			BFEditor.getInstance().getEngine().stop();
+		});
 		buttonsPanel.add(stopButton);
 
 		JButton stepButton = new JButton("Next instruction");

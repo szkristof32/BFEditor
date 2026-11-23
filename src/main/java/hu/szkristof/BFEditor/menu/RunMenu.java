@@ -37,6 +37,7 @@ public class RunMenu extends JMenu {
 		JMenuItem stopMenuItem = new JMenuItem(new AbstractAction("Stop") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				BFEditor.getInstance().getEngine().stop();
 			}
 		});
 		stopMenuItem.setAccelerator(KeyStroke.getKeyStroke("shift F5"));

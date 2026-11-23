@@ -30,7 +30,7 @@ public class ExecutionThread extends Thread {
 		}
 	}
 
-	public synchronized void setCurrentOperation(BFOperation currentOperation) {
+	public synchronized void pushOperation(BFOperation currentOperation) {
 		operationQueue.offer(currentOperation);
 		notifyAll();
 	}

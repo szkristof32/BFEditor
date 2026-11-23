@@ -3,7 +3,6 @@ package hu.szkristof.BFEngine;
 import hu.szkristof.BFEditor.BFEditor;
 import hu.szkristof.BFEditor.Preferences;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,7 +60,7 @@ public class BFEngine {
 	}
 
 	public void execute() {
-		executionThread.setCurrentOperation(this::executeImpl);
+		executionThread.pushOperation(this::executeImpl);
 	}
 
 	private void executeImpl() throws IOException {
@@ -76,15 +75,23 @@ public class BFEngine {
 	}
 
 	public void debug() {
-		executionThread.setCurrentOperation(this::debugImpl);
+		executionThread.pushOperation(this::debugImpl);
 	}
 
 	private void debugImpl() {
 		isRunning.set(true);
 	}
 
+	public void stop() {
+		executionThread.pushOperation(this::stopImpl);
+	}
+
+	private void stopImpl() {
+		isRunning.set(false);
+	}
+
 	public void step() {
-		executionThread.setCurrentOperation(this::stepImpl);
+		executionThread.pushOperation(this::stepImpl);
 	}
 
 	private void stepImpl() throws IOException {
@@ -92,7 +99,6 @@ public class BFEngine {
 			return;
 
 		char currentInstruction = source.charAt(programCounter);
-		System.out.print(currentInstruction);
 
 		switch (currentInstruction) {
 			case '>':
