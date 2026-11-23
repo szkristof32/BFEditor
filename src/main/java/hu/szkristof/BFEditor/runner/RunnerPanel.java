@@ -29,12 +29,20 @@ public class RunnerPanel extends JPanel {
 		buttonsPanel.add(executeButton);
 
 		JButton debugButton = new JButton("Debug");
+		debugButton.addActionListener(_ -> {
+			BFEngine engine = BFEditor.getInstance().getEngine();
+			engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
+			engine.debug();
+		});
 		buttonsPanel.add(debugButton);
 
 		JButton stopButton = new JButton("Stop");
 		buttonsPanel.add(stopButton);
 
-		JButton stepButton = new JButton("Step");
+		JButton stepButton = new JButton("Next instruction");
+		stepButton.addActionListener(_ -> {
+			BFEditor.getInstance().getEngine().step();
+		});
 		buttonsPanel.add(stepButton);
 
 		add(buttonsPanel, BorderLayout.NORTH);

@@ -88,7 +88,11 @@ public class BFEngine {
 	}
 
 	private void stepImpl() throws IOException {
+		if (!isRunning.get() || programCounter >= source.length())
+			return;
+
 		char currentInstruction = source.charAt(programCounter);
+		System.out.print(currentInstruction);
 
 		switch (currentInstruction) {
 			case '>':

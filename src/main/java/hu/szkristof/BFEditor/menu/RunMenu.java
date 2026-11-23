@@ -2,6 +2,7 @@ package hu.szkristof.BFEditor.menu;
 
 import hu.szkristof.BFEditor.BFEditor;
 import hu.szkristof.BFEditor.editorPanel.FileEditor;
+import hu.szkristof.BFEngine.BFEngine;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,6 +15,9 @@ public class RunMenu extends JMenu {
 		JMenuItem executeMenuItem = new JMenuItem(new AbstractAction("Execute") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				BFEngine engine = BFEditor.getInstance().getEngine();
+				engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
+				engine.execute();
 			}
 		});
 		executeMenuItem.setAccelerator(KeyStroke.getKeyStroke("F5"));
@@ -22,6 +26,9 @@ public class RunMenu extends JMenu {
 		JMenuItem debugMenuItem = new JMenuItem(new AbstractAction("Debug") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				BFEngine engine = BFEditor.getInstance().getEngine();
+				engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
+				engine.debug();
 			}
 		});
 		debugMenuItem.setAccelerator(KeyStroke.getKeyStroke("control F5"));
@@ -35,9 +42,10 @@ public class RunMenu extends JMenu {
 		stopMenuItem.setAccelerator(KeyStroke.getKeyStroke("shift F5"));
 		add(stopMenuItem);
 
-		JMenuItem stepMenuItem = new JMenuItem(new AbstractAction("Step") {
+		JMenuItem stepMenuItem = new JMenuItem(new AbstractAction("Next instruction") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				BFEditor.getInstance().getEngine().step();
 			}
 		});
 		stepMenuItem.setAccelerator(KeyStroke.getKeyStroke("F8"));
