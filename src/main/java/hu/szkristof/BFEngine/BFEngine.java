@@ -5,9 +5,12 @@ import hu.szkristof.BFEditor.Preferences;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BFEngine {
+
+	private final List<Character> validInstructions = Arrays.asList('+', '-', '>', '<', '.', ',', '[', ']');
 
 	private String source;
 	private PrintStream output;
@@ -67,7 +70,7 @@ public class BFEngine {
 		isRunning.set(true);
 
 		while (programCounter < source.length()) {
-			stepImpl();
+			processCurrentInstruction();
 		}
 
 		output.println();
@@ -90,11 +93,22 @@ public class BFEngine {
 		isRunning.set(false);
 	}
 
-	public void step() {
-		executionThread.pushOperation(this::stepImpl);
+	public void nextInstruction() {
+		executionThread.pushOperation(this::nextInstructionImpl);
 	}
 
-	private void stepImpl() throws IOException {
+	private void nextInstructionImpl() throws IOException {
+		while (programCounter < source.length() && !validInstructions.contains(source.charAt(programCounter))) {
+			programCounter++;
+		}
+
+		processCurrentInstruction();
+
+		if (programCounter >= source.length())
+			stopImpl();
+	}
+
+	private void processCurrentInstruction() throws IOException {
 		if (!isRunning.get() || programCounter >= source.length())
 			return;
 

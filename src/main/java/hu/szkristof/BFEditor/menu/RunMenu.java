@@ -1,7 +1,6 @@
 package hu.szkristof.BFEditor.menu;
 
 import hu.szkristof.BFEditor.BFEditor;
-import hu.szkristof.BFEditor.editorPanel.FileEditor;
 import hu.szkristof.BFEngine.BFEngine;
 
 import javax.swing.*;
@@ -46,7 +45,7 @@ public class RunMenu extends JMenu {
 		JMenuItem stepMenuItem = new JMenuItem(new AbstractAction("Next instruction") {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				BFEditor.getInstance().getEngine().step();
+				BFEditor.getInstance().getEngine().nextInstruction();
 			}
 		});
 		stepMenuItem.setAccelerator(KeyStroke.getKeyStroke("F8"));

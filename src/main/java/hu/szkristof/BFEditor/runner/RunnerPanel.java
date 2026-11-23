@@ -49,7 +49,7 @@ public class RunnerPanel extends JPanel {
 
 		JButton stepButton = new JButton("Next instruction");
 		stepButton.addActionListener(_ -> {
-			BFEditor.getInstance().getEngine().step();
+			BFEditor.getInstance().getEngine().nextInstruction();
 			updateRuntimeState();
 		});
 		buttonsPanel.add(stepButton);
