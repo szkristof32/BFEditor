@@ -30,7 +30,7 @@ public class EditorPanel extends JTabbedPane {
 		}
 
 		FileEditor editor = new FileEditor(file);
-		if (getCurrentEditor().getFile() == null) {
+		if (!openedFiles.isEmpty() && getCurrentEditor().getFile() == null) {
 			openedFiles.clear();
 			closeCurrentEditor();
 		}
@@ -107,6 +107,8 @@ public class EditorPanel extends JTabbedPane {
 
 	public FileEditor getCurrentEditor() {
 		int selectedIndex = getSelectedIndex();
+		if (selectedIndex == -1)
+			return null;
 		Component editor = getComponentAt(selectedIndex);
 		if (editor instanceof FileEditor fileEditor) {
 			return fileEditor;
