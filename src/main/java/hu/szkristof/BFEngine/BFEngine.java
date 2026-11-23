@@ -6,6 +6,7 @@ import hu.szkristof.BFEditor.Preferences;
 import javax.swing.*;
 import java.io.*;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BFEngine {
 
@@ -17,16 +18,24 @@ public class BFEngine {
 	private int dataPointer;
 	private int programCounter;
 
+	private AtomicBoolean isRunning = new AtomicBoolean(false);
+	private ExecutionThread executionThread;
+
+	private Preferences preferences;
+
 	public BFEngine() {
 		this(System.out, System.in);
 	}
 
 	public BFEngine(PrintStream output, InputStream input) {
-		Preferences prefs = BFEditor.getInstance().getPreferences();
+		this.preferences = BFEditor.getInstance().getPreferences();
 
-		this.memory = new char[prefs.getMemoryCellCount()];
+		this.memory = new char[preferences.getMemoryCellCount()];
 		this.output = output;
 		this.input = input;
+
+		this.executionThread = new ExecutionThread();
+		this.executionThread.start();
 
 		reset();
 	}
@@ -52,64 +61,76 @@ public class BFEngine {
 	}
 
 	public void execute() {
-		Thread interpreterThread = new Thread(() -> {
-			try {
-				executeImpl();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
-		interpreterThread.start();
+		executionThread.setCurrentOperation(this::executeImpl);
 	}
 
 	private void executeImpl() throws IOException {
-		Preferences prefs = BFEditor.getInstance().getPreferences();
+		isRunning.set(true);
 
 		while (programCounter < source.length()) {
-			char currentInstruction = source.charAt(programCounter);
-
-			switch (currentInstruction) {
-				case '>':
-					dataPointer++;
-					break;
-				case '<':
-					dataPointer--;
-					break;
-				case '+':
-					switch (prefs.getMemoryCellOverflowBehaviour()) {
-						case WrapAround -> memory[dataPointer]++;
-						case Cap -> memory[dataPointer] = (char) Math.max((memory[dataPointer] + 1) % 256, memory[dataPointer]);
-						default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
-					}
-					break;
-				case '-':
-					switch (prefs.getMemoryCellOverflowBehaviour()) {
-						case WrapAround -> memory[dataPointer]--;
-						case Cap -> memory[dataPointer] = (char) Math.min((memory[dataPointer] - 1) % 256, memory[dataPointer]);
-						default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
-					}
-					break;
-				case '.':
-					output.print(memory[dataPointer]);
-					break;
-				case ',':
-					memory[dataPointer] = (char) input.read();
-					break;
-				case '[':
-					if (memory[dataPointer] == 0) {
-						programCounter = searchLoopEnd();
-						continue;
-					}
-					break;
-				case ']':
-					programCounter = searchLoopStart();
-					continue;
-			}
-
-			programCounter++;
+			stepImpl();
 		}
 
 		output.println();
+		isRunning.set(false);
+	}
+
+	public void debug() {
+		executionThread.setCurrentOperation(this::debugImpl);
+	}
+
+	private void debugImpl() {
+		isRunning.set(true);
+	}
+
+	public void step() {
+		executionThread.setCurrentOperation(this::stepImpl);
+	}
+
+	private void stepImpl() throws IOException {
+		char currentInstruction = source.charAt(programCounter);
+
+		switch (currentInstruction) {
+			case '>':
+				dataPointer++;
+				break;
+			case '<':
+				dataPointer--;
+				break;
+			case '+':
+				switch (preferences.getMemoryCellOverflowBehaviour()) {
+					case WrapAround -> memory[dataPointer]++;
+					case Cap ->
+							memory[dataPointer] = (char) Math.max((memory[dataPointer] + 1) % 256, memory[dataPointer]);
+					default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
+				}
+				break;
+			case '-':
+				switch (preferences.getMemoryCellOverflowBehaviour()) {
+					case WrapAround -> memory[dataPointer]--;
+					case Cap ->
+							memory[dataPointer] = (char) Math.min((memory[dataPointer] - 1) % 256, memory[dataPointer]);
+					default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
+				}
+				break;
+			case '.':
+				output.print(memory[dataPointer]);
+				break;
+			case ',':
+				memory[dataPointer] = (char) input.read();
+				break;
+			case '[':
+				if (memory[dataPointer] == 0) {
+					programCounter = searchLoopEnd();
+					return;
+				}
+				break;
+			case ']':
+				programCounter = searchLoopStart();
+				return;
+		}
+
+		programCounter++;
 	}
 
 	private int searchLoopStart() {
@@ -154,4 +175,7 @@ public class BFEngine {
 		return -1;
 	}
 
+	public boolean getIsRunning() {
+		return isRunning.get();
+	}
 }
