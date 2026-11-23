@@ -1,12 +1,15 @@
 package hu.szkristof.BFEditor.menu;
 
+import hu.szkristof.BFEditor.BFAction;
 import hu.szkristof.BFEditor.BFEditor;
 import hu.szkristof.BFEditor.DialogThread;
+import hu.szkristof.BFEditor.ShortcutManager;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import static org.lwjgl.util.nfd.NativeFileDialog.*;
@@ -16,88 +19,35 @@ public class FileMenu extends JMenu {
 	public FileMenu() {
 		super("File");
 
-		InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		ActionMap actionMap = getActionMap();
-
-		JMenuItem newMenuItem = new JMenuItem(new AbstractAction("New") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				newFile();
-			}
-		});
-		newMenuItem.setAccelerator(KeyStroke.getKeyStroke("control N"));
+		JMenuItem newMenuItem = createMenu("New", KeyStroke.getKeyStroke("control N"), this::newFile);
 		add(newMenuItem);
 
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control N"), "new file", new AbstractAction("") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				newFile();
-			}
-		});
-
-		JMenuItem openMenuItem = new JMenuItem(new AbstractAction("Open") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openFile();
-			}
-		});
-		openMenuItem.setAccelerator(KeyStroke.getKeyStroke("control O"));
+		JMenuItem openMenuItem = createMenu("Open", KeyStroke.getKeyStroke("control O"), this::openFile);
 		add(openMenuItem);
 
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control O"), "open file", new AbstractAction("") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openFile();
-			}
-		});
-
-		JMenuItem saveMenuItem = new JMenuItem(new AbstractAction("Save") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveFile();
-			}
-		});
-		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke("control S"));
+		JMenuItem saveMenuItem = createMenu("Save", KeyStroke.getKeyStroke("control S"), this::saveFile);
 		add(saveMenuItem);
 
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control S"), "save file", new AbstractAction("") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveFile();
-			}
-		});
-
-		JMenuItem saveAsMenuItem = new JMenuItem(new AbstractAction("Save As") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveFileAs();
-			}
-		});
-		saveAsMenuItem.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
+		JMenuItem saveAsMenuItem = createMenu("Save", KeyStroke.getKeyStroke("control shift S"), this::saveFileAs);
 		add(saveAsMenuItem);
-
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control shift S"), "save file as", new AbstractAction("") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveFileAs();
-			}
-		});
 
 		addSeparator();
 
-		JMenuItem exitMenuItem = new JMenuItem(new AbstractAction("Exit") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				BFEditor.getInstance().requestClose();
-			}
-		});
-		exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
+		JMenuItem exitMenuItem = createMenu("Exit", KeyStroke.getKeyStroke("alt F4"), BFEditor.getInstance()::requestClose);
 		add(exitMenuItem);
 	}
 
-	private void addShortcut(InputMap inputMap, ActionMap actionMap, KeyStroke keyStroke, Object key, AbstractAction action) {
-		inputMap.put(keyStroke, key);
-		actionMap.put(key, action);
+	private JMenuItem createMenu(String name, KeyStroke keyStroke, BFAction action) {
+		JMenuItem menuItem = new JMenuItem(name);
+		menuItem.setAccelerator(keyStroke);
+		menuItem.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				action.actionPerformed();
+			}
+		});
+		BFEditor.getInstance().getShortcutManager().registerShortcut(keyStroke, action);
+		return menuItem;
 	}
 
 	private void newFile() {

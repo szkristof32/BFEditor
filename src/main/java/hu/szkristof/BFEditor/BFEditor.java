@@ -19,6 +19,7 @@ public class BFEditor extends JFrame {
 	private static BFEditor instance = null;
 
 	private PreferencesDialog preferencesDialog;
+	private ShortcutManager shortcutManager;
 
 	private EditorPanel editorPanel = null;
 	private Font editorFont = null;
@@ -33,6 +34,7 @@ public class BFEditor extends JFrame {
 		instance = this;
 
 		preferencesDialog = new PreferencesDialog();
+		shortcutManager = new ShortcutManager();
 
 		dialogThread = new DialogThread();
 		dialogThread.start();
@@ -92,12 +94,20 @@ public class BFEditor extends JFrame {
 		return preferencesDialog.getPreferences();
 	}
 
+	public ShortcutManager getShortcutManager() {
+		return shortcutManager;
+	}
+
 	public BFEngine getEngine() {
 		return engine;
 	}
 
 	public EditorPanel getEditorPanel() {
 		return editorPanel;
+	}
+
+	public RunnerPanel getRunnerPanel() {
+		return runnerPanel;
 	}
 
 	public DialogThread getDialogThread() {
