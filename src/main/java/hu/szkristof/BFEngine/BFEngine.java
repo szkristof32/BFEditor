@@ -185,7 +185,20 @@ public class BFEngine {
 		return -1;
 	}
 
-	public boolean getIsRunning() {
+	public boolean isRunning() {
 		return isRunning.get();
 	}
+
+	public int getProgramCounter() {
+		return programCounter;
+	}
+
+	public int getDataPointer() {
+		return dataPointer;
+	}
+
+	public char[] getMemory() {
+		return memory;
+	}
+
 }
