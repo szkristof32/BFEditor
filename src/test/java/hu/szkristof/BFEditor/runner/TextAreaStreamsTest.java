@@ -20,6 +20,8 @@ class TextAreaStreamsTest {
         });
         SwingUtilities.invokeAndWait(() -> {});
 
+        output.close();
+
         assertEquals("OK\n", textArea.getText());
     }
 
@@ -34,6 +36,8 @@ class TextAreaStreamsTest {
             output.write('\n');
         });
         SwingUtilities.invokeAndWait(() -> {});
+        
+        output.close();
 
         assertEquals("A\n", textArea.getText());
     }

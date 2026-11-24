@@ -19,8 +19,8 @@ public class BFEditor extends JFrame {
 
 	private static BFEditor instance = null;
 
-	private PreferencesDialog preferencesDialog;
-	private ShortcutManager shortcutManager;
+	private final PreferencesDialog preferencesDialog;
+	private final transient ShortcutManager shortcutManager;
 
 	private final EditorPanel editorPanel;
 	private final Font editorFont;
@@ -67,6 +67,7 @@ public class BFEditor extends JFrame {
 		engine = new BFEngine(printStream, runnerPanel.getInput());
 
 		addWindowListener(new WindowAdapter() {
+			/** Prompts before closing if any editor buffer has unsaved changes. */
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if (!editorPanel.shouldAllClose())
@@ -75,6 +76,7 @@ public class BFEditor extends JFrame {
 				BFEditor.this.dispose();
 			}
 
+			/** Stops the dialog worker and exits after the window is disposed. */
 			@Override
 			public void windowClosed(WindowEvent e) {
 				dialogThread.stop();

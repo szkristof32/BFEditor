@@ -32,16 +32,15 @@ public class EditHistory {
 	/**
 	 * Records and applies a text deletion.
 	 *
-	 * @param start deletion start position
+	 * @param start  deletion start position
 	 * @param remove text removed from the buffer
 	 */
 	public void delete(int start, String remove) {
 		Diff diff = new Diff(start, remove, -1, null);
-		if (historyIndex != diffs.size() - 1) {
-			if (diffs.size() > historyIndex + 1) {
-				diffs.subList(historyIndex + 1, diffs.size()).clear();
-			}
+		if (historyIndex != diffs.size() - 1 && diffs.size() > historyIndex + 1) {
+			diffs.subList(historyIndex + 1, diffs.size()).clear();
 		}
+
 		diffs.add(diff);
 		executeDiff(diff);
 		historyIndex++;
@@ -50,21 +49,21 @@ public class EditHistory {
 	/**
 	 * Records and applies a text insertion.
 	 *
-	 * @param start insertion start position
+	 * @param start  insertion start position
 	 * @param insert text inserted into the buffer
 	 */
 	public void insert(int start, String insert) {
 		Diff diff = new Diff(-1, null, start, insert);
-		if (historyIndex != diffs.size() - 1) {
-			if (diffs.size() > historyIndex + 1) {
-				diffs.subList(historyIndex + 1, diffs.size()).clear();
-			}
+		if (historyIndex != diffs.size() - 1 && diffs.size() > historyIndex + 1) {
+			diffs.subList(historyIndex + 1, diffs.size()).clear();
 		}
+
 		diffs.add(diff);
 		executeDiff(diff);
 		historyIndex++;
 	}
 
+	/** Applies a recorded text change to the current buffer state. */
 	private void executeDiff(Diff diff) {
 		String temp = currentState;
 		if (diff.remove() != null)
@@ -74,6 +73,7 @@ public class EditHistory {
 		currentState = temp;
 	}
 
+	/** Reverses a recorded text change in the current buffer state. */
 	private void revertDiff(Diff diff) {
 		String temp = currentState;
 		if (diff.add() != null)
