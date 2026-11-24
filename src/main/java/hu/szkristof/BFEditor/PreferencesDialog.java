@@ -4,10 +4,12 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/** Swing dialog used to view and change application preferences. */
 public class PreferencesDialog extends JDialog {
 
 	private Preferences preferences;
 
+	/** Creates and lays out the preferences dialog. */
 	public PreferencesDialog() {
 		super(BFEditor.getInstance(), "Preferences", true);
 
@@ -78,6 +80,11 @@ public class PreferencesDialog extends JDialog {
 		setLocationRelativeTo(BFEditor.getInstance());
 	}
 
+	/**
+	 * Gets the preferences managed by the dialog.
+	 *
+	 * @return active preferences
+	 */
 	public Preferences getPreferences() {
 		return preferences;
 	}

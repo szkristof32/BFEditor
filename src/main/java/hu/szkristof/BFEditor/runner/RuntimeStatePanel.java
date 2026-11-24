@@ -9,11 +9,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Displays the program counter, data pointer, and memory values during debugging. */
 public class RuntimeStatePanel extends JPanel {
 
 	private JTable table;
 	private RuntimeStateModel model;
 
+	/** Creates the runtime-state table panel. */
 	public RuntimeStatePanel() {
 		setLayout(new BorderLayout());
 
@@ -23,6 +25,7 @@ public class RuntimeStatePanel extends JPanel {
 		add(new JScrollPane(table), BorderLayout.CENTER);
 	}
 
+	/** Refreshes the table from the current engine state. */
 	public void updatePanel() {
 		BFEngine engine = BFEditor.getInstance().getEngine();
 		char[] memory = engine.getMemory();

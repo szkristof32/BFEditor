@@ -11,8 +11,10 @@ import static org.lwjgl.util.nfd.NativeFileDialog.NFD_CANCEL;
 import static org.lwjgl.util.nfd.NativeFileDialog.NFD_GetError;
 import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY;
 
+/** Handles native open-file and save-file dialogs on a daemon thread. */
 public class DialogThread extends Thread {
 
+	/** Identifies a pending native file-dialog action. */
 	public enum DialogAction {
 
 		None,
@@ -22,6 +24,7 @@ public class DialogThread extends Thread {
 
 	}
 
+	/** Identifies the dialog worker's current status. */
 	public enum DialogStatus {
 
 		None,
@@ -35,16 +38,19 @@ public class DialogThread extends Thread {
 	private DialogStatus status = DialogStatus.None;
 	private File lastFile = null;
 
+	/** Creates the native dialog worker thread. */
 	public DialogThread() {
 		setDaemon(true);
 	}
 
+	/** Requests that the worker stop and exits its wait loop. */
 	public synchronized void stop() {
 		running.set(false);
 		action = DialogAction.Invalid;
 		notifyAll();
 	}
 
+	/** Runs native-dialog initialization and processes pending actions. */
 	@Override
 	public synchronized void run() {
 		NFD_Init();
@@ -75,6 +81,7 @@ public class DialogThread extends Thread {
 		NFD_Quit();
 	}
 
+	/** Requests an open-file dialog. */
 	public synchronized void openFile() {
 		action = DialogAction.Open;
 		status = DialogStatus.Working;
@@ -98,6 +105,7 @@ public class DialogThread extends Thread {
 		notifyAll();
 	}
 
+	/** Requests a save-file dialog. */
 	public synchronized void saveFile() {
 		action = DialogAction.Save;
 		status = DialogStatus.Working;
@@ -121,6 +129,12 @@ public class DialogThread extends Thread {
 		notifyAll();
 	}
 
+	/**
+	 * Waits for the active dialog and gets its selected file.
+	 *
+	 * @return selected file, or {@code null} if the dialog was cancelled
+	 * @throws InterruptedException if waiting is interrupted
+	 */
 	public synchronized File getLastFile() throws InterruptedException {
 		while (status == DialogStatus.Working)
 			wait();

@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 
+/** Represents one open file buffer and its editable text area. */
 public class FileEditor extends JPanel {
 
 	private EditorTab tab;
@@ -19,6 +20,11 @@ public class FileEditor extends JPanel {
 
 	private int lastSavedHistory = -1;
 
+	/**
+	 * Creates an editor for a file or an untitled buffer.
+	 *
+	 * @param file file to load, or {@code null} for a new untitled buffer
+	 */
 	public FileEditor(File file) {
 		super(new GridLayout(1, 1));
 		this.tab = new EditorTab(this, file != null ? file.getName() : "Untitled");
@@ -110,47 +116,86 @@ public class FileEditor extends JPanel {
 		actionMap.put(key, action);
 	}
 
+	/**
+	 * Gets the edit-history index associated with the last save.
+	 *
+	 * @return last-saved history index
+	 */
 	public int getLastSavedHistory() {
 		return lastSavedHistory;
 	}
 
+	/** Marks the current state as saved. */
 	public void updateLastSavedHistory() {
 		lastSavedHistory = editHistory.getHistoryIndex();
 		tab.setDirty(false);
 	}
 
+	/** Copies the selected text to the system clipboard. */
 	public void copy() {
 		textArea.copy();
 	}
 
+	/** Pastes clipboard text into the buffer. */
 	public void paste() {
 		textArea.paste();
 	}
 
+	/** Cuts selected text into the system clipboard. */
 	public void cut() {
 		textArea.cut();
 	}
 
+	/**
+	 * Gets this buffer's tab component.
+	 *
+	 * @return editor tab
+	 */
 	public EditorTab getTab() {
 		return tab;
 	}
 
+	/**
+	 * Gets the file associated with this buffer.
+	 *
+	 * @return associated file, or {@code null} for an untitled buffer
+	 */
 	public File getFile() {
 		return file;
 	}
 
+	/**
+	 * Sets the file associated with this buffer.
+	 *
+	 * @param file associated file
+	 */
 	public void setFile(File file) {
 		this.file = file;
 	}
 
+	/**
+	 * Gets the editable text area.
+	 *
+	 * @return text area
+	 */
 	public JTextArea getTextArea() {
 		return textArea;
 	}
 
+	/**
+	 * Gets the complete buffer text.
+	 *
+	 * @return buffer text
+	 */
 	public String getBuffer() {
 		return textArea.getText();
 	}
 
+	/**
+	 * Replaces the buffer text without recording an edit-history change.
+	 *
+	 * @param buffer replacement text
+	 */
 	public void setBuffer(String buffer) {
 		EditorDocument document = (EditorDocument) textArea.getDocument();
 		int caretPosition = textArea.getCaretPosition();
@@ -160,6 +205,11 @@ public class FileEditor extends JPanel {
 		document.enable(true);
 	}
 
+	/**
+	 * Gets this buffer's edit history.
+	 *
+	 * @return edit history
+	 */
 	public EditHistory getEditHistory() {
 		return editHistory;
 	}

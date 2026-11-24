@@ -8,6 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Interprets and executes Brainfuck source code.
+ * It maintains the memory segment, data pointer, instruction pointer,
+ * input and output streams, and configured preferences.
+ */
 public class BFEngine {
 
 	private final List<Character> validInstructions = Arrays.asList('+', '-', '>', '<', '.', ',', '[', ']');
@@ -25,10 +30,17 @@ public class BFEngine {
 
 	private Preferences preferences;
 
+	/** Creates an engine connected to {@link System#out} and {@link System#in}. */
 	public BFEngine() {
 		this(System.out, System.in);
 	}
 
+	/**
+	 * Creates an engine with the supplied output and input streams.
+	 *
+	 * @param output stream receiving Brainfuck output
+	 * @param input stream supplying Brainfuck input
+	 */
 	public BFEngine(PrintStream output, InputStream input) {
 		this.preferences = BFEditor.getInstance().getPreferences();
 
@@ -42,10 +54,16 @@ public class BFEngine {
 		reset();
 	}
 
+	/**
+	 * Gets the stream used for program output.
+	 *
+	 * @return the output stream
+	 */
 	public PrintStream getOutput() {
 		return output;
 	}
 
+	/** Resets the pointers and memory cells according to the current preferences. */
 	public void reset() {
 		Preferences prefs = BFEditor.getInstance().getPreferences();
 
@@ -57,11 +75,17 @@ public class BFEngine {
 		Arrays.fill(this.memory, (char) prefs.getDefaultMemoryCellValue());
 	}
 
+	/**
+	 * Sets the source code and resets the execution state.
+	 *
+	 * @param source Brainfuck source code to execute
+	 */
 	public void reset(String source) {
 		this.source = source;
 		reset();
 	}
 
+	/** Queues execution of the complete source code. */
 	public void execute() {
 		executionThread.pushOperation(this::executeImpl);
 	}
@@ -77,6 +101,7 @@ public class BFEngine {
 		isRunning.set(false);
 	}
 
+	/** Starts debug mode for instruction-by-instruction execution. */
 	public void debug() {
 		executionThread.pushOperation(this::debugImpl);
 	}
@@ -85,6 +110,7 @@ public class BFEngine {
 		isRunning.set(true);
 	}
 
+	/** Stops the running or debugged program. */
 	public void stop() {
 		executionThread.pushOperation(this::stopImpl);
 	}
@@ -93,6 +119,7 @@ public class BFEngine {
 		isRunning.set(false);
 	}
 
+	/** Executes the next valid Brainfuck instruction. */
 	public void nextInstruction() {
 		executionThread.pushOperation(this::nextInstructionImpl);
 	}
@@ -199,18 +226,38 @@ public class BFEngine {
 		return -1;
 	}
 
+	/**
+	 * Reports whether the engine is currently running.
+	 *
+	 * @return {@code true} while execution is active
+	 */
 	public boolean isRunning() {
 		return isRunning.get();
 	}
 
+	/**
+	 * Gets the current instruction pointer.
+	 *
+	 * @return position of the instruction pointer in the source
+	 */
 	public int getProgramCounter() {
 		return programCounter;
 	}
 
+	/**
+	 * Gets the current data pointer.
+	 *
+	 * @return index of the active memory cell
+	 */
 	public int getDataPointer() {
 		return dataPointer;
 	}
 
+	/**
+	 * Gets the engine's memory segment.
+	 *
+	 * @return the memory cells
+	 */
 	public char[] getMemory() {
 		return memory;
 	}

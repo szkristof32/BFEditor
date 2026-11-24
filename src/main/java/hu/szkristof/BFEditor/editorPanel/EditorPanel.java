@@ -8,19 +8,27 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Tabbed panel containing all open file editors and buffer tabs. */
 public class EditorPanel extends JTabbedPane {
 
 	private List<FileEditor> openedFiles = new ArrayList<>();
 
+	/** Creates an empty editor panel. */
 	public EditorPanel() {
 	}
 
+	/** Creates and opens a new untitled file buffer. */
 	public void newFile() {
 		FileEditor editor = new FileEditor(null);
 		openedFiles.add(editor);
 		addTabAndSwitch("Untitled", editor);
 	}
 
+	/**
+	 * Opens a file in a new tab or selects an already open tab.
+	 *
+	 * @param file file to open
+	 */
 	public void openFile(File file) {
 		for (int i = 0; i < openedFiles.size(); i++) {
 			if (openedFiles.get(i).getFile() != null && openedFiles.get(i).getFile().equals(file)) {
@@ -38,6 +46,11 @@ public class EditorPanel extends JTabbedPane {
 		addTabAndSwitch(file.getName(), editor);
 	}
 
+	/**
+	 * Saves the current file if it already has a filesystem path.
+	 *
+	 * @return {@code false} if a save-location dialog is required
+	 */
 	public boolean saveCurrentFile() {
 		FileEditor editor = getCurrentEditor();
 		if (editor.getFile() == null)
@@ -47,6 +60,11 @@ public class EditorPanel extends JTabbedPane {
 		return true;
 	}
 
+	/**
+	 * Writes the current buffer to a file and updates the tab.
+	 *
+	 * @param file destination file
+	 */
 	public void saveFile(File file) {
 		String buffer = getCurrentBuffer();
 		try (OutputStream out = new FileOutputStream(file)) {
@@ -62,6 +80,11 @@ public class EditorPanel extends JTabbedPane {
 		}
 	}
 
+	/**
+	 * Checks whether all open buffers may be closed.
+	 *
+	 * @return {@code true} if closing may proceed
+	 */
 	public boolean shouldAllClose() {
 		for (FileEditor editor : openedFiles) {
 			if (!editor.getTab().isDirty())
@@ -72,6 +95,12 @@ public class EditorPanel extends JTabbedPane {
 		return true;
 	}
 
+	/**
+	 * Confirms whether a buffer with unsaved edits may be closed.
+	 *
+	 * @param editor buffer to close
+	 * @return {@code true} if closing may proceed
+	 */
 	public boolean shouldClose(FileEditor editor) {
 		boolean isDirty = editor.getTab().isDirty();
 		if (!isDirty) return true;
@@ -80,11 +109,17 @@ public class EditorPanel extends JTabbedPane {
 		return result == JOptionPane.YES_OPTION;
 	}
 
+	/** Closes the selected editor tab. */
 	public void closeCurrentEditor() {
 		FileEditor editor = getCurrentEditor();
 		closeEditor(editor);
 	}
 
+	/**
+	 * Closes an editor after checking for unsaved changes.
+	 *
+	 * @param editor editor to close
+	 */
 	public void closeEditor(FileEditor editor) {
 		if (!shouldClose(editor)) return;
 		openedFiles.remove(editor);
@@ -105,6 +140,11 @@ public class EditorPanel extends JTabbedPane {
 		tab.setDirty(false);
 	}
 
+	/**
+	 * Gets the selected file editor.
+	 *
+	 * @return active editor, or {@code null} if no tab is selected
+	 */
 	public FileEditor getCurrentEditor() {
 		int selectedIndex = getSelectedIndex();
 		if (selectedIndex == -1)
@@ -116,6 +156,11 @@ public class EditorPanel extends JTabbedPane {
 		return null;
 	}
 
+	/**
+	 * Gets the file associated with the selected editor.
+	 *
+	 * @return active file, or {@code null} for an untitled buffer
+	 */
 	public File getCurrentFile() {
 		int selectedIndex = getSelectedIndex();
 		Component editor = getComponentAt(selectedIndex);
@@ -125,6 +170,11 @@ public class EditorPanel extends JTabbedPane {
 		return null;
 	}
 
+	/**
+	 * Gets the text in the selected buffer.
+	 *
+	 * @return active buffer text
+	 */
 	public String getCurrentBuffer() {
 		int selectedIndex = getSelectedIndex();
 		Component editor = getComponentAt(selectedIndex);

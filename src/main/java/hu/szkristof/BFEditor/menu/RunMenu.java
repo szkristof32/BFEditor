@@ -6,8 +6,10 @@ import hu.szkristof.BFEngine.BFEngine;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+/** Run menu controlling execution and debugging of the active buffer. */
 public class RunMenu extends JMenu {
 
+	/** Creates all Run-menu items and keyboard shortcuts. */
 	public RunMenu() {
 		super("Run");
 

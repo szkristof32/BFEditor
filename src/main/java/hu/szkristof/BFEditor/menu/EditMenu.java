@@ -6,8 +6,10 @@ import hu.szkristof.BFEditor.editorPanel.FileEditor;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
+/** Edit menu providing undo, redo, clipboard, and preferences actions. */
 public class EditMenu extends JMenu {
 
+	/** Creates all Edit-menu items and keyboard shortcuts. */
 	public EditMenu() {
 		super("Edit");
 

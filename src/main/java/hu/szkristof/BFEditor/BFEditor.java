@@ -14,6 +14,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+/**
+ * Main singleton application window integrating the editor, runner, menus,
+ * preferences dialog, Brainfuck engine, and native file-dialog thread.
+ */
 public class BFEditor extends JFrame {
 
 	private static BFEditor instance = null;
@@ -28,6 +32,7 @@ public class BFEditor extends JFrame {
 	private BFEngine engine = null;
 	private DialogThread dialogThread = null;
 
+	/** Creates and displays the main application window. */
 	public BFEditor() {
 		super("BFEditor");
 		instance = this;
@@ -84,34 +89,66 @@ public class BFEditor extends JFrame {
 		});
 	}
 
+	/** Opens the preferences dialog. */
 	public void openPreferences() {
 		preferencesDialog.setVisible(true);
 	}
 
+	/**
+	 * Gets the application's active preferences.
+	 *
+	 * @return active preferences
+	 */
 	public Preferences getPreferences() {
 		return preferencesDialog.getPreferences();
 	}
 
+	/**
+	 * Gets the Brainfuck interpreter.
+	 *
+	 * @return the application engine
+	 */
 	public BFEngine getEngine() {
 		return engine;
 	}
 
+	/**
+	 * Gets the tabbed editor panel.
+	 *
+	 * @return editor panel
+	 */
 	public EditorPanel getEditorPanel() {
 		return editorPanel;
 	}
 
+	/**
+	 * Gets the native file-dialog worker thread.
+	 *
+	 * @return dialog thread
+	 */
 	public DialogThread getDialogThread() {
 		return dialogThread;
 	}
 
+	/**
+	 * Gets the font used in the editor and virtual console.
+	 *
+	 * @return editor font
+	 */
 	public Font getEditorFont() {
 		return editorFont;
 	}
 
+	/** Requests that the application main window close. */
 	public void requestClose() {
 		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
+	/**
+	 * Gets the singleton application instance.
+	 *
+	 * @return the application instance, or {@code null} before construction
+	 */
 	public static BFEditor getInstance() {
 		return instance;
 	}

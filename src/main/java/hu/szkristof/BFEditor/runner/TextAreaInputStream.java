@@ -7,10 +7,16 @@ import java.io.InputStream;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/** Converts key presses in a text area into an input stream for Brainfuck. */
 public class TextAreaInputStream extends InputStream {
 
 	private Queue<Character> characters = new ConcurrentLinkedQueue<>();
 
+	/**
+	 * Creates an input stream linked to a text area.
+	 *
+	 * @param textArea text area supplying characters
+	 */
 	public TextAreaInputStream(JTextArea textArea) {
 		textArea.addKeyListener(new KeyAdapter() {
 			@Override
@@ -20,6 +26,11 @@ public class TextAreaInputStream extends InputStream {
 		});
 	}
 
+	/**
+	 * Reads the next typed character, waiting until one is available.
+	 *
+	 * @return character value
+	 */
 	@Override
 	public int read() {
 		while (characters.isEmpty()) {

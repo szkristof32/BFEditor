@@ -11,8 +11,10 @@ import java.io.File;
 
 import static org.lwjgl.util.nfd.NativeFileDialog.*;
 
+/** File menu providing new, open, save, save-as, and exit actions. */
 public class FileMenu extends JMenu {
 
+	/** Creates all File-menu items and keyboard shortcuts. */
 	public FileMenu() {
 		super("File");
 

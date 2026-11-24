@@ -7,6 +7,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * Displays runner controls, the virtual console, and debug runtime state.
+ */
 public class RunnerPanel extends JPanel {
 
 	private JSplitPane splitPane;
@@ -17,6 +20,7 @@ public class RunnerPanel extends JPanel {
 
 	private RuntimeStatePanel runtimeStatePanel;
 
+	/** Creates the runner controls and virtual-console panel. */
 	public RunnerPanel() {
 		setLayout(new BorderLayout());
 
@@ -77,6 +81,7 @@ public class RunnerPanel extends JPanel {
 		output = new TextAreaOutputStream(virtualConsole);
 	}
 
+	/** Refreshes runtime-state visibility and contents after an engine action. */
 	public void updateRuntimeState() {
 		try {
 			// make sure engine is up to date
@@ -99,10 +104,20 @@ public class RunnerPanel extends JPanel {
 		BFEditor.getInstance().revalidate();
 	}
 
+	/**
+	 * Gets the stream receiving virtual-console input.
+	 *
+	 * @return virtual-console input stream
+	 */
 	public TextAreaInputStream getInput() {
 		return input;
 	}
 
+	/**
+	 * Gets the stream writing to the virtual console.
+	 *
+	 * @return virtual-console output stream
+	 */
 	public TextAreaOutputStream getOutput() {
 		return output;
 	}

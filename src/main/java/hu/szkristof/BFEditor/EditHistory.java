@@ -3,6 +3,9 @@ package hu.szkristof.BFEditor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Tracks buffer insertions and deletions for undo and redo operations.
+ */
 public class EditHistory {
 
 	private String currentState = "";
@@ -10,9 +13,11 @@ public class EditHistory {
 	private int startingIndex = 0;
 	private int historyIndex = -1;
 
+	/** Creates an empty edit history. */
 	public EditHistory() {
 	}
 
+	/** Undo the latest change unless the history has reached its starting state. */
 	public void undo() {
 		if (historyIndex <= startingIndex)
 			return;
@@ -20,6 +25,7 @@ public class EditHistory {
 		historyIndex--;
 	}
 
+	/** Redo the next previously undone change, if one exists. */
 	public void redo() {
 		if (historyIndex == diffs.size() - 1)
 			return;
@@ -27,6 +33,12 @@ public class EditHistory {
 		historyIndex++;
 	}
 
+	/**
+	 * Records and applies a text deletion.
+	 *
+	 * @param start deletion start position
+	 * @param remove text removed from the buffer
+	 */
 	public void delete(int start, String remove) {
 		Diff diff = new Diff(start, remove, -1, null);
 		if (historyIndex != diffs.size() - 1) {
@@ -39,6 +51,12 @@ public class EditHistory {
 		historyIndex++;
 	}
 
+	/**
+	 * Records and applies a text insertion.
+	 *
+	 * @param start insertion start position
+	 * @param insert text inserted into the buffer
+	 */
 	public void insert(int start, String insert) {
 		Diff diff = new Diff(-1, null, start, insert);
 		if (historyIndex != diffs.size() - 1) {
@@ -69,14 +87,29 @@ public class EditHistory {
 		currentState = temp;
 	}
 
+	/**
+	 * Sets the history index corresponding to the last saved state.
+	 *
+	 * @param startingIndex saved-state history index
+	 */
 	public void setStartingIndex(int startingIndex) {
 		this.startingIndex = startingIndex;
 	}
 
+	/**
+	 * Gets the current buffer text.
+	 *
+	 * @return text produced by the edit history
+	 */
 	public String getCurrentState() {
 		return currentState;
 	}
 
+	/**
+	 * Gets the current position in the edit history.
+	 *
+	 * @return current history index
+	 */
 	public int getHistoryIndex() {
 		return historyIndex;
 	}
