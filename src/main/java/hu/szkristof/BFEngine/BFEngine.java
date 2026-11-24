@@ -18,17 +18,17 @@ public class BFEngine {
 	private final List<Character> validInstructions = Arrays.asList('+', '-', '>', '<', '.', ',', '[', ']');
 
 	private String source;
-	private PrintStream output;
-	private InputStream input;
+	private final PrintStream output;
+	private final InputStream input;
 
 	private char[] memory;
 	private int dataPointer;
 	private int programCounter;
 
-	private AtomicBoolean isRunning = new AtomicBoolean(false);
-	private ExecutionThread executionThread;
+	private final AtomicBoolean isRunning = new AtomicBoolean(false);
+	private final ExecutionThread executionThread;
 
-	private Preferences preferences;
+	private final Preferences preferences;
 
 	/** Creates an engine connected to {@link System#out} and {@link System#in}. */
 	public BFEngine() {
@@ -39,7 +39,7 @@ public class BFEngine {
 	 * Creates an engine with the supplied output and input streams.
 	 *
 	 * @param output stream receiving Brainfuck output
-	 * @param input stream supplying Brainfuck input
+	 * @param input  stream supplying Brainfuck input
 	 */
 	public BFEngine(PrintStream output, InputStream input) {
 		this.preferences = BFEditor.getInstance().getPreferences();
@@ -63,7 +63,9 @@ public class BFEngine {
 		return output;
 	}
 
-	/** Resets the pointers and memory cells according to the current preferences. */
+	/**
+	 * Resets the pointers and memory cells according to the current preferences.
+	 */
 	public void reset() {
 		Preferences prefs = BFEditor.getInstance().getPreferences();
 
@@ -150,25 +152,28 @@ public class BFEngine {
 				break;
 			case '+':
 				switch (preferences.getMemoryCellOverflowBehaviour()) {
-					case WrapAround -> memory[dataPointer]++;
-					case Cap ->
-							memory[dataPointer] = (char) Math.max((memory[dataPointer] + 1) % 256, memory[dataPointer]);
-					default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
+					case WRAP_AROUND -> memory[dataPointer]++;
+					case CAP ->
+						memory[dataPointer] = (char) Math.max((memory[dataPointer] + 1) % 256, memory[dataPointer]);
+					default -> throw new IllegalStateException("Unknown MemoryCellOverflowBehaviour");
 				}
 				break;
 			case '-':
 				switch (preferences.getMemoryCellOverflowBehaviour()) {
-					case WrapAround -> memory[dataPointer]--;
-					case Cap ->
-							memory[dataPointer] = (char) Math.min((memory[dataPointer] - 1) % 256, memory[dataPointer]);
-					default -> throw new RuntimeException("Unknown MemoryCellOverflowBehaviour");
+					case WRAP_AROUND -> memory[dataPointer]--;
+					case CAP ->
+						memory[dataPointer] = (char) Math.min((memory[dataPointer] - 1) % 256, memory[dataPointer]);
+					default -> throw new IllegalStateException("Unknown MemoryCellOverflowBehaviour");
 				}
 				break;
 			case '.':
 				output.print(memory[dataPointer]);
 				break;
 			case ',':
-				memory[dataPointer] = (char) input.read();
+				int inputValue = input.read();
+				if (inputValue != -1) {
+					memory[dataPointer] = (char) inputValue;
+				}
 				break;
 			case '[':
 				if (memory[dataPointer] == 0) {
@@ -179,6 +184,7 @@ public class BFEngine {
 			case ']':
 				programCounter = searchLoopStart();
 				return;
+			default:
 		}
 
 		programCounter++;
@@ -198,6 +204,8 @@ public class BFEngine {
 					break;
 				case ']':
 					innerLoopCount++;
+					break;
+				default:
 			}
 			pc--;
 		}
@@ -219,6 +227,8 @@ public class BFEngine {
 						innerLoopCount--;
 					else
 						return pc + 1;
+					break;
+				default:
 			}
 			pc++;
 		}

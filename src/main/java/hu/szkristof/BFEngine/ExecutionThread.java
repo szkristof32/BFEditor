@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Executes queued Brainfuck operations on a dedicated control thread. */
 public class ExecutionThread extends Thread {
 
-	private AtomicBoolean running = new AtomicBoolean(true);
-	private Queue<BFOperation> operationQueue = new ConcurrentLinkedQueue<>();
+	private final AtomicBoolean running = new AtomicBoolean(true);
+	private final Queue<BFOperation> operationQueue = new ConcurrentLinkedQueue<>();
 
 	/** Processes queued operations while the thread remains active. */
 	@Override
@@ -18,8 +18,8 @@ public class ExecutionThread extends Thread {
 			while (operationQueue.isEmpty()) {
 				try {
 					wait();
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
+				} catch (InterruptedException _) {
+					Thread.currentThread().interrupt();
 				}
 			}
 

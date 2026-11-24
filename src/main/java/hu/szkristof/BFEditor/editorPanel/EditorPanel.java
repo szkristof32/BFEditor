@@ -11,11 +11,7 @@ import java.util.List;
 /** Tabbed panel containing all open file editors and buffer tabs. */
 public class EditorPanel extends JTabbedPane {
 
-	private List<FileEditor> openedFiles = new ArrayList<>();
-
-	/** Creates an empty editor panel. */
-	public EditorPanel() {
-	}
+	private final List<FileEditor> openedFiles = new ArrayList<>();
 
 	/** Creates and opens a new untitled file buffer. */
 	public void newFile() {

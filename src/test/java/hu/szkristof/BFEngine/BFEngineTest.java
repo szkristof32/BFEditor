@@ -139,7 +139,7 @@ class BFEngineTest {
 
     @Test
     void capOverflowKeepsMaximumValue() throws Exception {
-        preferences.setMemoryCellOverflowBehaviour(Preferences.MemoryCellOverflowBehaviour.Cap);
+        preferences.setMemoryCellOverflowBehaviour(Preferences.MemoryCellOverflowBehaviour.CAP);
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             BFEngine engine = new BFEngine(
@@ -152,7 +152,7 @@ class BFEngineTest {
 
             assertEquals("\u00ff" + System.lineSeparator(), bytes.toString(StandardCharsets.UTF_8));
         } finally {
-            preferences.setMemoryCellOverflowBehaviour(Preferences.MemoryCellOverflowBehaviour.WrapAround);
+            preferences.setMemoryCellOverflowBehaviour(Preferences.MemoryCellOverflowBehaviour.WRAP_AROUND);
         }
     }
 

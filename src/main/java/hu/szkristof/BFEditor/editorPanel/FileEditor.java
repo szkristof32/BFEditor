@@ -12,11 +12,11 @@ import java.io.*;
 /** Represents one open file buffer and its editable text area. */
 public class FileEditor extends JPanel {
 
-	private EditorTab tab;
+	private final EditorTab tab;
 
 	private File file;
-	private JTextArea textArea;
-	private EditHistory editHistory;
+	private final JTextArea textArea;
+	private final transient EditHistory editHistory;
 
 	private int lastSavedHistory = -1;
 

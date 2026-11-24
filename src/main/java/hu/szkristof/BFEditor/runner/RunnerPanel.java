@@ -12,13 +12,13 @@ import java.awt.*;
  */
 public class RunnerPanel extends JPanel {
 
-	private JSplitPane splitPane;
+	private final JSplitPane splitPane;
 
-	private JTextArea virtualConsole;
-	private TextAreaInputStream input;
-	private TextAreaOutputStream output;
+	private final JTextArea virtualConsole;
+	private final transient TextAreaInputStream input;
+	private final transient TextAreaOutputStream output;
 
-	private RuntimeStatePanel runtimeStatePanel;
+	private final RuntimeStatePanel runtimeStatePanel;
 
 	/** Creates the runner controls and virtual-console panel. */
 	public RunnerPanel() {
@@ -65,7 +65,7 @@ public class RunnerPanel extends JPanel {
 		virtualConsole.setFont(BFEditor.getInstance().getEditorFont());
 
 		JScrollPane scrollPane = new JScrollPane(virtualConsole);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
 		runtimeStatePanel = new RuntimeStatePanel();
 		runtimeStatePanel.setVisible(false);
@@ -86,8 +86,8 @@ public class RunnerPanel extends JPanel {
 		try {
 			// make sure engine is up to date
 			Thread.sleep(10);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+		} catch (InterruptedException _) {
+			Thread.currentThread().interrupt();
 		}
 
 		BFEngine engine = BFEditor.getInstance().getEngine();

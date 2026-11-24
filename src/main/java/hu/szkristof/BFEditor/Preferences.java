@@ -9,7 +9,7 @@ import java.io.*;
 public class Preferences implements Serializable {
 
 	private int memoryCellCount = 1024;
-	private MemoryCellOverflowBehaviour memoryCellOverflowBehaviour = MemoryCellOverflowBehaviour.WrapAround;
+	private MemoryCellOverflowBehaviour memoryCellOverflowBehaviour = MemoryCellOverflowBehaviour.WRAP_AROUND;
 	private int defaultMemoryCellValue = 0;
 
 	/**
@@ -86,14 +86,8 @@ public class Preferences implements Serializable {
 	 */
 	public static Preferences deserialize() {
 		try (FileInputStream fileInputStream = new FileInputStream("preferences.dat")) {
-			try (ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
-				Preferences prefs = (Preferences) objectInputStream.readObject();
-				System.out.println("Serialization successful");
-				return prefs;
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
-		} catch (FileNotFoundException e) {
+			return readPreferences(fileInputStream);
+		} catch (FileNotFoundException _) {
 			System.out.println("Preferences file not found, using default values.");
 			return new Preferences();
 		} catch (IOException e) {
@@ -101,12 +95,22 @@ public class Preferences implements Serializable {
 		}
 	}
 
+	private static Preferences readPreferences(FileInputStream fileInputStream) {
+		try (ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
+			Preferences prefs = (Preferences) objectInputStream.readObject();
+			System.out.println("Serialization successful");
+			return prefs;
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/** Defines how an unsigned 8-bit memory cell handles overflow. */
 	public enum MemoryCellOverflowBehaviour {
 
-		None,
-		WrapAround,
-		Cap
+		NONE,
+		WRAP_AROUND,
+		CAP
 
 	}
 

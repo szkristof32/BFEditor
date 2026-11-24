@@ -24,7 +24,7 @@ class PreferencesTest {
     @Test
     void overflowBehaviourDefaultsToWrapAround() {
         assertEquals(
-                Preferences.MemoryCellOverflowBehaviour.WrapAround,
+                Preferences.MemoryCellOverflowBehaviour.WRAP_AROUND,
                 new Preferences().getMemoryCellOverflowBehaviour()
         );
     }
@@ -32,8 +32,8 @@ class PreferencesTest {
     @Test
     void overflowBehaviourCanBeChanged() {
         Preferences preferences = new Preferences();
-        preferences.setMemoryCellOverflowBehaviour(Preferences.MemoryCellOverflowBehaviour.Cap);
-        assertEquals(Preferences.MemoryCellOverflowBehaviour.Cap, preferences.getMemoryCellOverflowBehaviour());
+        preferences.setMemoryCellOverflowBehaviour(Preferences.MemoryCellOverflowBehaviour.CAP);
+        assertEquals(Preferences.MemoryCellOverflowBehaviour.CAP, preferences.getMemoryCellOverflowBehaviour());
     }
 
     @Test

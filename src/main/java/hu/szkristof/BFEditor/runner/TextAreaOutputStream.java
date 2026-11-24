@@ -7,7 +7,6 @@ import java.io.OutputStream;
 public class TextAreaOutputStream extends OutputStream {
 
 	private final JTextArea textArea;
-	private final StringBuilder stringBuilder = new StringBuilder();
 
 	/**
 	 * Creates an output stream connected to a text area.
@@ -31,6 +30,22 @@ public class TextAreaOutputStream extends OutputStream {
 
 		final String toAppend = String.valueOf((char) b);
 		SwingUtilities.invokeLater(() -> textArea.append(toAppend));
+	}
+
+	/**
+	 * Appends up to {@code len} bytes from the specified byte array starting at
+	 * offset {@code off} to the virtual console.
+	 * Carriage-return bytes are ignored.
+	 *
+	 * @param b   the data
+	 * @param off the start offset in the data
+	 * @param len the maximum number of bytes to write
+	 */
+	@Override
+	public void write(byte[] b, int off, int len) {
+		for (int i = off; i < Math.min(b.length, len + off); i++) {
+			write(b[i]);
+		}
 	}
 
 }

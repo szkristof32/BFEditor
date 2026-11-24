@@ -12,8 +12,8 @@ import java.util.List;
 /** Displays the program counter, data pointer, and memory values during debugging. */
 public class RuntimeStatePanel extends JPanel {
 
-	private JTable table;
-	private RuntimeStateModel model;
+	private final JTable table;
+	private final RuntimeStateModel model;
 
 	/** Creates the runtime-state table panel. */
 	public RuntimeStatePanel() {
@@ -73,7 +73,6 @@ public class RuntimeStatePanel extends JPanel {
 		}
 
 		public void clearData() {
-			int size = data.size();
 			data.clear();
 		}
 

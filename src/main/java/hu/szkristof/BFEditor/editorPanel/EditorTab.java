@@ -9,12 +9,10 @@ import java.awt.event.ActionEvent;
 /** Displays an editor tab title, dirty marker, and close button. */
 public class EditorTab extends JPanel {
 
-	private FileEditor editor;
-
 	private String title;
 	private boolean dirty;
 
-	private JLabel label;
+	private final JLabel label;
 
 	/**
 	 * Creates a tab component for an editor.
@@ -23,7 +21,6 @@ public class EditorTab extends JPanel {
 	 * @param title tab title
 	 */
 	public EditorTab(FileEditor editor, String title) {
-		this.editor = editor;
 		this.title = title;
 		this.dirty = false;
 		this.label = new JLabel(title);

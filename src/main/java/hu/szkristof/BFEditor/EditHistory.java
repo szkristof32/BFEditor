@@ -9,13 +9,9 @@ import java.util.List;
 public class EditHistory {
 
 	private String currentState = "";
-	private List<Diff> diffs = new ArrayList<>();
+	private final List<Diff> diffs = new ArrayList<>();
 	private int startingIndex = 0;
 	private int historyIndex = -1;
-
-	/** Creates an empty edit history. */
-	public EditHistory() {
-	}
 
 	/** Undo the latest change unless the history has reached its starting state. */
 	public void undo() {

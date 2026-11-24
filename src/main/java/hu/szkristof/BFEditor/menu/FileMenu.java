@@ -2,14 +2,10 @@ package hu.szkristof.BFEditor.menu;
 
 import hu.szkristof.BFEditor.BFEditor;
 import hu.szkristof.BFEditor.DialogThread;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.system.MemoryStack;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-
-import static org.lwjgl.util.nfd.NativeFileDialog.*;
 
 /** File menu providing new, open, save, save-as, and exit actions. */
 public class FileMenu extends JMenu {
@@ -113,8 +109,8 @@ public class FileMenu extends JMenu {
 			File file = dialogThread.getLastFile();
 			if (file != null)
 				BFEditor.getInstance().getEditorPanel().openFile(file);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
+		} catch (InterruptedException _) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -128,8 +124,8 @@ public class FileMenu extends JMenu {
 			File file = dialogThread.getLastFile();
 			if (file != null)
 				BFEditor.getInstance().getEditorPanel().saveFile(file);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
+		} catch (InterruptedException _) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -140,8 +136,8 @@ public class FileMenu extends JMenu {
 			File file = dialogThread.getLastFile();
 			if (file != null)
 				BFEditor.getInstance().getEditorPanel().saveFile(file);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
+		} catch (InterruptedException _) {
+			Thread.currentThread().interrupt();
 		}
 	}
 

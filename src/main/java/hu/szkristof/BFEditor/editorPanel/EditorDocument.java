@@ -9,7 +9,7 @@ import javax.swing.text.PlainDocument;
 /** Swing document that records editor insertions and removals in edit history. */
 public class EditorDocument extends PlainDocument {
 
-	private final EditHistory history;
+	private final transient EditHistory history;
 	private final FileEditor editor;
 	private boolean enabled = true;
 

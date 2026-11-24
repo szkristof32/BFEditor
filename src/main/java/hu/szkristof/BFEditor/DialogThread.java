@@ -7,9 +7,6 @@ import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.util.nfd.NativeFileDialog.*;
-import static org.lwjgl.util.nfd.NativeFileDialog.NFD_CANCEL;
-import static org.lwjgl.util.nfd.NativeFileDialog.NFD_GetError;
-import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY;
 
 /** Handles native open-file and save-file dialogs on a daemon thread. */
 public class DialogThread extends Thread {
@@ -17,25 +14,25 @@ public class DialogThread extends Thread {
 	/** Identifies a pending native file-dialog action. */
 	public enum DialogAction {
 
-		None,
-		Open,
-		Save,
-		Invalid
+		NONE,
+		OPEN,
+		SAVE,
+		INVALID
 
 	}
 
 	/** Identifies the dialog worker's current status. */
 	public enum DialogStatus {
 
-		None,
-		Idle,
-		Working
+		NONE,
+		IDLE,
+		WORKING
 
 	}
 
 	private final AtomicBoolean running = new AtomicBoolean(true);
-	private DialogAction action = DialogAction.None;
-	private DialogStatus status = DialogStatus.None;
+	private DialogAction action = DialogAction.NONE;
+	private DialogStatus status = DialogStatus.NONE;
 	private File lastFile = null;
 
 	/** Creates the native dialog worker thread. */
@@ -46,7 +43,7 @@ public class DialogThread extends Thread {
 	/** Requests that the worker stop and exits its wait loop. */
 	public synchronized void stop() {
 		running.set(false);
-		action = DialogAction.Invalid;
+		action = DialogAction.INVALID;
 		notifyAll();
 	}
 
@@ -55,22 +52,22 @@ public class DialogThread extends Thread {
 	public synchronized void run() {
 		NFD_Init();
 
-		status = DialogStatus.Idle;
+		status = DialogStatus.IDLE;
 
 		while (running.get()) {
-			while (action == DialogAction.None) {
+			while (action == DialogAction.NONE) {
 				try {
 					wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				} catch (InterruptedException _) {
+					Thread.currentThread().interrupt();
 				}
 			}
 
 			switch (action) {
-				case Open:
+				case OPEN:
 					open();
 					break;
-				case Save:
+				case SAVE:
 					save();
 					break;
 				default:
@@ -83,49 +80,45 @@ public class DialogThread extends Thread {
 
 	/** Requests an open-file dialog. */
 	public synchronized void openFile() {
-		action = DialogAction.Open;
-		status = DialogStatus.Working;
+		action = DialogAction.OPEN;
+		status = DialogStatus.WORKING;
 		notifyAll();
 	}
 
-	private void open() {
+	private synchronized void open() {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			PointerBuffer buffer = stack.callocPointer(512);
-			int status = NFD_OpenDialog(buffer, null, (CharSequence) null);
-			if (status == NFD_OKAY) {
-				lastFile = new File(buffer.getStringASCII());
-			} else if (status == NFD_CANCEL) {
-				System.out.println("User cancelled");
-			} else {
-				System.err.println("Error occurred: " + NFD_GetError());
+			int dialogStatus = NFD_OpenDialog(buffer, null, (CharSequence) null);
+			switch (dialogStatus) {
+				case NFD_OKAY -> lastFile = new File(buffer.getStringASCII());
+				case NFD_CANCEL -> System.out.println("User cancelled");
+				default -> System.err.println("Error occurred: " + NFD_GetError());
 			}
-			action = DialogAction.None;
+			action = DialogAction.NONE;
 		}
-		status = DialogStatus.Idle;
+		status = DialogStatus.IDLE;
 		notifyAll();
 	}
 
 	/** Requests a save-file dialog. */
 	public synchronized void saveFile() {
-		action = DialogAction.Save;
-		status = DialogStatus.Working;
+		action = DialogAction.SAVE;
+		status = DialogStatus.WORKING;
 		notifyAll();
 	}
 
-	private void save() {
+	private synchronized void save() {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			PointerBuffer buffer = stack.callocPointer(512);
-			int status = NFD_SaveDialog(buffer, null, (CharSequence) null, null);
-			if (status == NFD_OKAY) {
-				lastFile = new File(buffer.getStringASCII());
-			} else if (status == NFD_CANCEL) {
-				System.out.println("User cancelled");
-			} else {
-				System.err.println("Error occurred: " + NFD_GetError());
+			int dialogStatus = NFD_SaveDialog(buffer, null, (CharSequence) null, null);
+			switch (dialogStatus) {
+				case NFD_OKAY -> lastFile = new File(buffer.getStringASCII());
+				case NFD_CANCEL -> System.out.println("User cancelled");
+				default -> System.err.println("Error occurred: " + NFD_GetError());
 			}
-			action = DialogAction.None;
+			action = DialogAction.NONE;
 		}
-		status = DialogStatus.Idle;
+		status = DialogStatus.IDLE;
 		notifyAll();
 	}
 
@@ -136,11 +129,11 @@ public class DialogThread extends Thread {
 	 * @throws InterruptedException if waiting is interrupted
 	 */
 	public synchronized File getLastFile() throws InterruptedException {
-		while (status == DialogStatus.Working)
+		while (status == DialogStatus.WORKING)
 			wait();
 
-		File lastFile = this.lastFile;
-		this.lastFile = null;
-		return lastFile;
+		File result = lastFile;
+		lastFile = null;
+		return result;
 	}
 }

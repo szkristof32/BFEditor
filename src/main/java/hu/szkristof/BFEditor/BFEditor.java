@@ -7,11 +7,8 @@ import hu.szkristof.BFEngine.BFEngine;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 
 /**
@@ -22,27 +19,27 @@ public class BFEditor extends JFrame {
 
 	private static BFEditor instance = null;
 
-	private PreferencesDialog preferencesDialog;
+	private final PreferencesDialog preferencesDialog;
 
-	private EditorPanel editorPanel = null;
-	private Font editorFont = null;
+	private final EditorPanel editorPanel;
+	private final Font editorFont;
 
-	private RunnerPanel runnerPanel = null;
+	private final RunnerPanel runnerPanel;
 
-	private BFEngine engine = null;
-	private DialogThread dialogThread = null;
+	private final transient BFEngine engine;
+	private final transient DialogThread dialogThread;
 
 	/** Creates and displays the main application window. */
 	public BFEditor() {
 		super("BFEditor");
-		instance = this;
+		registerInstance(this);
 
 		preferencesDialog = new PreferencesDialog();
 
 		dialogThread = new DialogThread();
 		dialogThread.start();
 
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setSize(1280, 720);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());
@@ -81,8 +78,8 @@ public class BFEditor extends JFrame {
 				dialogThread.stop();
 				try {
 					dialogThread.join();
-				} catch (InterruptedException ex) {
-					ex.printStackTrace();
+				} catch (InterruptedException _) {
+					Thread.currentThread().interrupt();
 				}
 				System.exit(0);
 			}
@@ -153,7 +150,13 @@ public class BFEditor extends JFrame {
 		return instance;
 	}
 
-	static void main(String[] args) {
+	private static void registerInstance(BFEditor editor) {
+		if (instance != null)
+			throw new IllegalStateException("Singleton instance is already initialised.");
+		instance = editor;
+	}
+
+	static void main() {
 		new BFEditor();
 	}
 

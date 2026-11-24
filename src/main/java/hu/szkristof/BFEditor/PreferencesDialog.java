@@ -7,7 +7,7 @@ import java.awt.*;
 /** Swing dialog used to view and change application preferences. */
 public class PreferencesDialog extends JDialog {
 
-	private Preferences preferences;
+	private final Preferences preferences;
 
 	/** Creates and lays out the preferences dialog. */
 	public PreferencesDialog() {
