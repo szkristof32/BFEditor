@@ -1,5 +1,6 @@
 package hu.szkristof.BFEditor.menu;
 
+import hu.szkristof.BFEditor.BFAction;
 import hu.szkristof.BFEditor.BFEditor;
 import hu.szkristof.BFEngine.BFEngine;
 
@@ -13,45 +14,53 @@ public class RunMenu extends JMenu {
 	public RunMenu() {
 		super("Run");
 
-		JMenuItem executeMenuItem = new JMenuItem(new AbstractAction("Execute") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				BFEngine engine = BFEditor.getInstance().getEngine();
-				engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
-				engine.execute();
-			}
-		});
-		executeMenuItem.setAccelerator(KeyStroke.getKeyStroke("F5"));
+		JMenuItem executeMenuItem = createMenu("Execute", KeyStroke.getKeyStroke("F5"), this::execute);
 		add(executeMenuItem);
 
-		JMenuItem debugMenuItem = new JMenuItem(new AbstractAction("Debug") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				BFEngine engine = BFEditor.getInstance().getEngine();
-				engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
-				engine.debug();
-			}
-		});
-		debugMenuItem.setAccelerator(KeyStroke.getKeyStroke("control F5"));
+		JMenuItem debugMenuItem = createMenu("Debug", KeyStroke.getKeyStroke("control F5"), this::debug);
 		add(debugMenuItem);
 
-		JMenuItem stopMenuItem = new JMenuItem(new AbstractAction("Stop") {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				BFEditor.getInstance().getEngine().stop();
-			}
-		});
-		stopMenuItem.setAccelerator(KeyStroke.getKeyStroke("shift F5"));
+		JMenuItem stopMenuItem = createMenu("Stop", KeyStroke.getKeyStroke("shift F5"), this::stop);
 		add(stopMenuItem);
 
-		JMenuItem stepMenuItem = new JMenuItem(new AbstractAction("Next instruction") {
+		JMenuItem stepMenuItem = createMenu("Next instruction", KeyStroke.getKeyStroke("F7"), this::nextInstruction);
+		add(stepMenuItem);
+	}
+
+	private JMenuItem createMenu(String name, KeyStroke keyStroke, BFAction action) {
+		JMenuItem menuItem = new JMenuItem(name);
+		menuItem.setAccelerator(keyStroke);
+		menuItem.addActionListener(new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				BFEditor.getInstance().getEngine().nextInstruction();
+				action.actionPerformed();
 			}
 		});
-		stepMenuItem.setAccelerator(KeyStroke.getKeyStroke("F8"));
-		add(stepMenuItem);
+		BFEditor.getInstance().getShortcutManager().registerShortcut(keyStroke, action);
+		return menuItem;
+	}
+
+	private void execute(){
+		BFEngine engine = BFEditor.getInstance().getEngine();
+		engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
+		engine.execute();
+	}
+
+	private void debug(){
+		BFEngine engine = BFEditor.getInstance().getEngine();
+		engine.reset(BFEditor.getInstance().getEditorPanel().getCurrentBuffer());
+		engine.debug();
+		BFEditor.getInstance().getRunnerPanel().updateRuntimeState();
+	}
+
+	private void stop(){
+		BFEditor.getInstance().getEngine().stop();
+		BFEditor.getInstance().getRunnerPanel().updateRuntimeState();
+	}
+
+	private void nextInstruction(){
+		BFEditor.getInstance().getEngine().nextInstruction();
+		BFEditor.getInstance().getRunnerPanel().updateRuntimeState();
 	}
 
 }

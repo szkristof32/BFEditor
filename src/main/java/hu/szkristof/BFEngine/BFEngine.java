@@ -39,7 +39,7 @@ public class BFEngine {
 	 * Creates an engine with the supplied output and input streams.
 	 *
 	 * @param output stream receiving Brainfuck output
-	 * @param input  stream supplying Brainfuck input
+	 * @param input  stream supplying character input
 	 */
 	public BFEngine(PrintStream output, InputStream input) {
 		this.preferences = BFEditor.getInstance().getPreferences();

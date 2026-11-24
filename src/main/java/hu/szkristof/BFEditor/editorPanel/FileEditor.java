@@ -6,7 +6,6 @@ import hu.szkristof.BFEditor.EditHistory;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 
 /** Represents one open file buffer and its editable text area. */
@@ -37,44 +36,6 @@ public class FileEditor extends JPanel {
 		textArea.setAutoscrolls(true);
 		textArea.setFont(BFEditor.getInstance().getEditorFont());
 		textArea.setDocument(new EditorDocument(editHistory, this));
-
-		InputMap inputMap = textArea.getInputMap();
-		ActionMap actionMap = textArea.getActionMap();
-
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control Z"), "undo", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				editHistory.undo();
-				setBuffer(editHistory.getCurrentState());
-			}
-		});
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control Y"), "redo", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				editHistory.redo();
-				setBuffer(editHistory.getCurrentState());
-			}
-		});
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control C"), "my_copy", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				copy();
-			}
-		});
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control V"), "my_paste", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				paste();
-				setBuffer(editHistory.getCurrentState());
-			}
-		});
-		addShortcut(inputMap, actionMap, KeyStroke.getKeyStroke("control X"), "my_cut", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cut();
-				setBuffer(editHistory.getCurrentState());
-			}
-		});
 
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -109,11 +70,6 @@ public class FileEditor extends JPanel {
 				BFEditor.getInstance().revalidate();
 			}
 		}
-	}
-
-	private void addShortcut(InputMap inputMap, ActionMap actionMap, KeyStroke keyStroke, Object key, AbstractAction action) {
-		inputMap.put(keyStroke, key);
-		actionMap.put(key, action);
 	}
 
 	/**

@@ -19,7 +19,8 @@ public class BFEditor extends JFrame {
 
 	private static BFEditor instance = null;
 
-	private final PreferencesDialog preferencesDialog;
+	private PreferencesDialog preferencesDialog;
+	private ShortcutManager shortcutManager;
 
 	private final EditorPanel editorPanel;
 	private final Font editorFont;
@@ -35,6 +36,7 @@ public class BFEditor extends JFrame {
 		registerInstance(this);
 
 		preferencesDialog = new PreferencesDialog();
+		shortcutManager = new ShortcutManager();
 
 		dialogThread = new DialogThread();
 		dialogThread.start();
@@ -101,6 +103,15 @@ public class BFEditor extends JFrame {
 	}
 
 	/**
+	 * Gets the shortcut manager.
+	 * 
+	 * @return shortcut manager
+	 */
+	public ShortcutManager getShortcutManager() {
+		return shortcutManager;
+	}
+
+	/**
 	 * Gets the Brainfuck interpreter.
 	 *
 	 * @return the application engine
@@ -116,6 +127,15 @@ public class BFEditor extends JFrame {
 	 */
 	public EditorPanel getEditorPanel() {
 		return editorPanel;
+	}
+
+	/**
+	 * Gets the runner panel.
+	 * 
+	 * @return runner panel
+	 */
+	public RunnerPanel getRunnerPanel() {
+		return runnerPanel;
 	}
 
 	/**
